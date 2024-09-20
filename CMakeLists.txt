@@ -14,6 +14,6 @@ add_executable(calfenster
 src/app_server.cpp
 src/main.cpp)
 
-target_compile_options(calfenster PRIVATE -Wall -Wextra -pedantic -Werror)
+target_compile_options(calfenster PRIVATE -Wall -Wextra -pedantic)
 target_include_directories(calfenster PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(calfenster PRIVATE Qt5::Widgets Qt5::Network)

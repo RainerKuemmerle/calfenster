@@ -1,6 +1,8 @@
 #include <qapplication.h>
+#include <qboxlayout.h>
 #include <qcalendarwidget.h>
 #include <qobject.h>
+#include <qwidget.h>
 
 #include <iostream>
 
@@ -16,8 +18,14 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  QCalendarWidget widget;
-  widget.show();
+  QWidget main_widget;
+  main_widget.setWindowFlags(Qt::CustomizeWindowHint);
+
+  auto* calendar_widget = new QCalendarWidget(&main_widget);
+  auto* stack_layout = new QHBoxLayout(&main_widget);
+  stack_layout->addWidget(calendar_widget);
+
+  main_widget.show();
 
   return QApplication::exec();
 }

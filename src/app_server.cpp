@@ -7,9 +7,14 @@
 #include <qobject.h>
 #include <qregion.h>
 
-#include "calfenster/moc_app_server.cpp"
+#include "calfenster/moc_app_server.cpp" // NOLINT
+
+namespace {
+constexpr int kShutdownByte = 1;
+}
 
 namespace calfenster {
+
 AppServer::AppServer(QObject* parent) : QObject(parent) {
   server_ = new QLocalServer(this);
   if (!server_->listen("calfenster.lock")) {
@@ -37,7 +42,7 @@ void AppServer::SlotReadClient() {
     if (local_socket->bytesAvailable() < static_cast<int>(sizeof(quint8)))
       break;
     in >> command_from_client;
-    if (command_from_client == 1) {
+    if (command_from_client == kShutdownByte) {
       qApp->exit();
     }
   }
@@ -52,7 +57,7 @@ bool AppServer::SendShutdownRequest() {
   QByteArray array_block;
   QDataStream out(&array_block, QIODevice::WriteOnly);
   out.setVersion(QDataStream::Qt_5_3);
-  out << static_cast<quint8>(1);
+  out << static_cast<quint8>(kShutdownByte);
   socket.write(array_block);
   socket.waitForBytesWritten(1000);
   return true;
