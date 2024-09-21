@@ -11,7 +11,7 @@ struct Configuration {
   ~Configuration() = default;
 
   // Window display options
-  bool bypass_window_manager = true;
+  bool skip_task_bar = true;
   bool frameless_window = true;
   bool window_no_shadow = false;
   bool window_stays_on_top = true;

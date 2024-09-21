@@ -8,11 +8,7 @@ namespace calfenster {
 
 void Configuration::ConfigureWindow(QWidget& widget) const {
   Qt::WindowFlags flags;
-  if (bypass_window_manager) {
-    // flags |= Qt::X11BypassWindowManagerHint;
-    // flags |= Qt::Dialog;
-    flags |= Qt::BypassWindowManagerHint;
-  }
+  if (skip_task_bar) flags |= Qt::SplashScreen;
   if (frameless_window) flags |= Qt::FramelessWindowHint;
   if (window_no_shadow) flags |= Qt::NoDropShadowWindowHint;
   if (window_stays_on_top) flags |= Qt::WindowStaysOnTopHint;
@@ -22,7 +18,9 @@ void Configuration::ConfigureWindow(QWidget& widget) const {
   widget.setWindowFlags(flags);
 
   if (window_position == "mouse") {
-    widget.move(widget.mapFromGlobal(QCursor::pos()));
+    QPoint cursor_pos = QCursor::pos();
+    cursor_pos.setY(cursor_pos.y() - widget.sizeHint().height());
+    widget.move(cursor_pos);
   }
 }
 
