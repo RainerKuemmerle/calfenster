@@ -59,8 +59,7 @@ bool AppServer::SendShutdownRequest() {
   out.setVersion(QDataStream::Qt_5_3);
   out << static_cast<quint8>(kShutdownByte);
   socket.write(array_block);
-  socket.waitForBytesWritten(1000);
-  return true;
+  return socket.waitForBytesWritten(1000);
 }
 
 }  // namespace calfenster
