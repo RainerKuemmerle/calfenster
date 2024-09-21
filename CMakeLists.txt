@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
 
 add_executable(calfenster
+src/configuration.cpp
 src/app_server.cpp
 src/main.cpp)
 
