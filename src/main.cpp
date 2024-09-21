@@ -8,6 +8,7 @@
 
 #include "calfenster/app_server.h"
 #include "calfenster/configuration.h"
+#include "calfenster/event_filter.h"
 
 int main(int argc, char* argv[]) {
   QApplication app(argc, argv);
@@ -28,8 +29,12 @@ int main(int argc, char* argv[]) {
   auto* stack_layout = new QHBoxLayout(&main_widget);
   stack_layout->addWidget(calendar_widget);
 
+  auto* event_filter = new calfenster::EventFilter(&main_widget);
+  event_filter->main_widget = &main_widget;
+  event_filter->calendar_widget = calendar_widget;
+  main_widget.installEventFilter(event_filter);
+
   main_widget.show();
   main_widget.activateWindow();
-
   return QApplication::exec();
 }

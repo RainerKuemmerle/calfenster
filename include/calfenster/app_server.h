@@ -4,7 +4,7 @@
 
 #include <QLocalServer>
 
-#include "app_server.moc"
+// #include "app_server.moc"
 
 namespace calfenster {
 class AppServer : public QObject {

@@ -12,9 +12,10 @@ find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
 
 add_executable(calfenster
 src/configuration.cpp
+src/event_filter.cpp
 src/app_server.cpp
 src/main.cpp)
 
 target_compile_options(calfenster PRIVATE -Wall -Wextra -pedantic)
 target_include_directories(calfenster PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(calfenster PRIVATE Qt5::Widgets Qt5::Network)
+target_link_libraries(calfenster PRIVATE Qt5::Core Qt5::Widgets Qt5::Network)
