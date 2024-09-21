@@ -1,14 +1,14 @@
 #pragma once
 
-#include <string>
+#include <qstring.h>
 
 class QWidget;
 class QCalendarWidget;
 
 namespace calfenster {
 struct Configuration {
-  Configuration() = default;
-  ~Configuration() = default;
+  Configuration();
+  ~Configuration();
 
   // Window display options
   bool skip_task_bar = true;
@@ -19,7 +19,7 @@ struct Configuration {
   bool customize_window = true;
 
   // Window position
-  std::string window_position = "mouse";  ///< either mouse or none
+  QString window_position = "mouse";  ///< either mouse or none
 
   // Calender display options
   bool show_grid = true;
