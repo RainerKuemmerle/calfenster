@@ -3,6 +3,7 @@
 #include <qapplication.h>
 #include <qcoreevent.h>
 #include <qevent.h>
+#include <qeventloop.h>
 #include <qnamespace.h>
 #include <qobject.h>
 #include <qwidget.h>
@@ -14,7 +15,8 @@ EventFilter::EventFilter(QObject* parent) : QObject(parent) {}
 
 bool EventFilter::eventFilter(QObject* obj, QEvent* event) {
   if (event->type() == QEvent::Close) {
-    qApp->exit();
+    auto* close_event = static_cast<QCloseEvent*>(event);
+    close_event->accept();
     return true;
   }
   if (event->type() == QEvent::KeyPress) {
@@ -23,7 +25,11 @@ bool EventFilter::eventFilter(QObject* obj, QEvent* event) {
         (key_event->modifiers() == Qt::ControlModifier &&
          key_event->key() == Qt::Key_Q)) {
       qApp->exit();
+      return true;
     }
+  }
+  if (event->type() == QEvent::MouseMove) {
+    main_widget->activateWindow();
   }
   return QObject::eventFilter(obj, event);
 }

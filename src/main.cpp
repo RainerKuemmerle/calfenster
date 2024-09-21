@@ -20,19 +20,21 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  calfenster::Configuration config;
-
   QWidget main_widget;
-  config.SetWindowFlags(main_widget);
-
   auto* calendar_widget = new QCalendarWidget(&main_widget);
   auto* stack_layout = new QHBoxLayout(&main_widget);
   stack_layout->addWidget(calendar_widget);
+
+  calfenster::Configuration config;
 
   auto* event_filter = new calfenster::EventFilter(&main_widget);
   event_filter->main_widget = &main_widget;
   event_filter->calendar_widget = calendar_widget;
   main_widget.installEventFilter(event_filter);
+  calendar_widget->installEventFilter(event_filter);
+
+  config.ConfigureWindow(main_widget);
+  config.ConfigureCalendar(*calendar_widget);
 
   main_widget.show();
   main_widget.activateWindow();

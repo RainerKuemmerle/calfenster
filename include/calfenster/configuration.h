@@ -3,6 +3,7 @@
 #include <string>
 
 class QWidget;
+class QCalendarWidget;
 
 namespace calfenster {
 struct Configuration {
@@ -20,6 +21,10 @@ struct Configuration {
   // Window position
   std::string window_position = "mouse";  ///< either mouse or none
 
-  void SetWindowFlags(QWidget& widget) const;
+  // Calender display options
+  bool show_grid = true;
+
+  void ConfigureWindow(QWidget& widget) const;
+  void ConfigureCalendar(QCalendarWidget& widget) const;
 };
 }  // namespace calfenster
