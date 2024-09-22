@@ -1,6 +1,7 @@
 #include <qapplication.h>
 #include <qboxlayout.h>
 #include <qcalendarwidget.h>
+#include <qcommandlineparser.h>
 #include <qobject.h>
 #include <qwidget.h>
 
@@ -13,6 +14,14 @@
 
 int main(int argc, char* argv[]) {
   QApplication app(argc, argv);
+  QCoreApplication::setApplicationName("CalFenster");
+
+  // Command line parsing
+  QCommandLineParser command_line;
+  command_line.setApplicationDescription("A simple calender widget.");
+  command_line.addHelpOption();
+  // actual parsing of the command line
+  command_line.process(app);
 
   calfenster::AppServer app_server;
   if (app_server.HasOtherInstance()) {
