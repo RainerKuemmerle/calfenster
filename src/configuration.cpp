@@ -14,6 +14,7 @@ namespace calfenster {
 
 Configuration::Configuration() {
   QSettings settings(kSettingsOrg, kSettingsApp);
+  save_on_exit = settings.allKeys().isEmpty();
   skip_task_bar = settings.value("skip_task_bar", skip_task_bar).toBool();
   frameless_window =
       settings.value("frameless_window", frameless_window).toBool();
@@ -30,6 +31,8 @@ Configuration::Configuration() {
 }
 
 Configuration::~Configuration() {
+  if (!save_on_exit) return;
+  // Create a configuration with default values
   QSettings settings(kSettingsOrg, kSettingsApp);
   settings.setValue("skip_task_bar", skip_task_bar);
   settings.setValue("frameless_window", frameless_window);

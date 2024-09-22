@@ -26,5 +26,7 @@ struct Configuration {
 
   void ConfigureWindow(QWidget& widget) const;
   void ConfigureCalendar(QCalendarWidget& widget) const;
+
+  bool save_on_exit = false;
 };
 }  // namespace calfenster
