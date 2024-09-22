@@ -7,13 +7,18 @@
 #include <qobject.h>
 #include <qregion.h>
 
-#include "calfenster/moc_app_server.cpp" // NOLINT
-
-namespace {
-constexpr int kShutdownByte = 1;
-}
+#include "calfenster/moc_app_server.cpp"  // NOLINT
 
 namespace calfenster {
+
+namespace {
+enum class Command : quint8 {
+  kShutdown = 1,
+  kCommandSize  // keep as last for sanity check
+};
+static_assert(static_cast<int>(Command::kCommandSize) < 255,
+              "Command has to fit into a byte");
+}  // namespace
 
 AppServer::AppServer(QObject* parent) : QObject(parent) {
   server_ = new QLocalServer(this);
@@ -42,8 +47,13 @@ void AppServer::SlotReadClient() {
     if (local_socket->bytesAvailable() < static_cast<int>(sizeof(quint8)))
       break;
     in >> command_from_client;
-    if (command_from_client == kShutdownByte) {
-      qApp->exit();
+    auto command = static_cast<Command>(command_from_client);
+    switch (command) {
+      case Command::kShutdown:
+        qApp->exit();
+        break;
+      case Command::kCommandSize:
+        break;
     }
   }
 }
@@ -57,7 +67,7 @@ bool AppServer::SendShutdownRequest() {
   QByteArray array_block;
   QDataStream out(&array_block, QIODevice::WriteOnly);
   out.setVersion(QDataStream::Qt_5_3);
-  out << static_cast<quint8>(kShutdownByte);
+  out << static_cast<quint8>(Command::kShutdown);
   socket.write(array_block);
   return socket.waitForBytesWritten(1000);
 }
