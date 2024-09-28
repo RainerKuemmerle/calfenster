@@ -28,6 +28,7 @@ Configuration::Configuration() {
       settings.value("customize_window", customize_window).toBool();
   window_position =
       settings.value("window_position", window_position).toString();
+  locale = settings.value("locale", locale).toString();
 }
 
 Configuration::~Configuration() {
@@ -40,7 +41,9 @@ Configuration::~Configuration() {
   settings.setValue("window_stays_on_top", window_stays_on_top);
   settings.setValue("window_stays_on_bottom", window_stays_on_bottom);
   settings.setValue("customize_window", customize_window);
-  settings.setValue("window_position", window_position);
+  if (!window_position.isEmpty())
+    settings.setValue("window_position", window_position);
+  if (!locale.isEmpty()) settings.setValue("locale", locale);
 }
 
 void Configuration::ConfigureWindow(QWidget& widget) const {

@@ -20,6 +20,7 @@ struct Configuration {
 
   // Window position
   QString window_position = "mouse";  ///< either mouse or none
+  QString locale = "";                ///< Common Locale Data Repository v45
 
   // Calender display options
   bool show_grid = true;
