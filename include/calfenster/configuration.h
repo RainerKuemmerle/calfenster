@@ -2,11 +2,30 @@
 
 #include <qstring.h>
 
+#include <utility>
+
 class QWidget;
 class QCalendarWidget;
 
 namespace calfenster {
+
+/**
+ * @brief The configuration class of our nice little tool.
+ */
 struct Configuration {
+  /**
+   * @brief Information about a clock to be displayed.
+   */
+  struct Clock {
+    Clock(QString label, QString timezone, QString format)
+        : label(std::move(label)),
+          timezone(std::move(timezone)),
+          format(std::move(format)) {}
+    QString label;
+    QString timezone;
+    QString format;
+  };
+
   Configuration();
   ~Configuration();
 
@@ -24,6 +43,8 @@ struct Configuration {
 
   // Calender display options
   bool show_grid = true;
+
+  std::vector<Clock> clocks;  ///< the clocks configured in the config file
 
   void ConfigureWindow(QWidget& widget) const;
   void ConfigureCalendar(QCalendarWidget& widget) const;

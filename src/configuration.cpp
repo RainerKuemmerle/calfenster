@@ -1,9 +1,12 @@
 #include "calfenster/configuration.h"
 
 #include <qcalendarwidget.h>
+#include <qdebug.h>
 #include <qnamespace.h>
 #include <qsettings.h>
 #include <qwidget.h>
+
+#include <cstddef>
 
 namespace {
 const QString kSettingsOrg = "calfenster";
@@ -29,6 +32,17 @@ Configuration::Configuration() {
   window_position =
       settings.value("window_position", window_position).toString();
   locale = settings.value("locale", locale).toString();
+
+  // reading clocks
+  int size = settings.beginReadArray("Clocks");
+  clocks.reserve(size);
+  for (int i = 0; i < size; ++i) {
+    settings.setArrayIndex(i);
+    clocks.emplace_back(settings.value("label", "").toString(),
+                        settings.value("timezone", "").toString(),
+                        settings.value("format", "").toString());
+  }
+  settings.endArray();
 }
 
 Configuration::~Configuration() {
@@ -44,6 +58,16 @@ Configuration::~Configuration() {
   if (!window_position.isEmpty())
     settings.setValue("window_position", window_position);
   if (!locale.isEmpty()) settings.setValue("locale", locale);
+  if (!clocks.empty()) {
+    settings.beginWriteArray("Clocks");
+    for (std::size_t i = 0; i < clocks.size(); ++i) {
+      settings.setArrayIndex(i);
+      settings.setValue("label", clocks[i].label);
+      settings.setValue("timezone", clocks[i].timezone);
+      settings.setValue("format", clocks[i].format);
+    }
+    settings.endArray();
+  }
 }
 
 void Configuration::ConfigureWindow(QWidget& widget) const {
