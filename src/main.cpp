@@ -2,7 +2,9 @@
 #include <qboxlayout.h>
 #include <qcalendarwidget.h>
 #include <qcommandlineparser.h>
+#include <qdebug.h>
 #include <qglobal.h>
+#include <qlocale.h>
 #include <qobject.h>
 #include <qwidget.h>
 
@@ -50,6 +52,12 @@ int main(int argc, char* argv[]) {
     return request_status ? EXIT_SUCCESS : EXIT_FAILURE;
   }
 
+  calfenster::Configuration config;
+  if (!config.locale.isEmpty()) {
+    QLocale locale_override(config.locale);
+    QLocale::setDefault(locale_override);
+  }
+
   QWidget main_widget;
   auto* calendar_widget = new QCalendarWidget(&main_widget);
   auto* stack_layout = new QHBoxLayout(&main_widget);
@@ -67,7 +75,6 @@ int main(int argc, char* argv[]) {
   main_widget.installEventFilter(event_filter);
   calendar_widget->installEventFilter(event_filter);
 
-  calfenster::Configuration config;
   config.ConfigureWindow(main_widget);
   config.ConfigureCalendar(*calendar_widget);
 
