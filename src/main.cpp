@@ -79,6 +79,5 @@ int main(int argc, char* argv[]) {
   config.ConfigureCalendar(*calendar_widget);
 
   main_widget.show();
-  main_widget.activateWindow();
   return QApplication::exec();
 }
