@@ -7,18 +7,14 @@
 #include <qobject.h>
 #include <qregion.h>
 
+#include <optional>
+
 #include "calfenster/moc_app_server.cpp"  // NOLINT
 
 namespace calfenster {
 
-namespace {
-enum class Command : quint8 {
-  kShutdown = 1,
-  kCommandSize  // keep as last for sanity check
-};
-static_assert(static_cast<int>(Command::kCommandSize) < 255,
+static_assert(static_cast<int>(AppServer::Command::kCommandSize) < 255,
               "Command has to fit into a byte");
-}  // namespace
 
 AppServer::AppServer(QObject* parent) : QObject(parent) {
   server_ = new QLocalServer(this);
@@ -52,13 +48,19 @@ void AppServer::SlotReadClient() {
       case Command::kShutdown:
         qApp->exit();
         break;
+      case Command::kPrevMonth:
+        emit ShowPrevMonth();
+        break;
+      case Command::kNextMonth:
+        emit ShowNextMonth();
+        break;
       case Command::kCommandSize:
         break;
     }
   }
 }
 
-bool AppServer::SendShutdownRequest() {
+bool AppServer::SendCommand(Command cmd) {
   QLocalSocket socket(this);
   socket.connectToServer("calfenster.lock");
   if (!socket.waitForConnected(1000)) {
@@ -67,9 +69,16 @@ bool AppServer::SendShutdownRequest() {
   QByteArray array_block;
   QDataStream out(&array_block, QIODevice::WriteOnly);
   out.setVersion(QDataStream::Qt_5_3);
-  out << static_cast<quint8>(Command::kShutdown);
+  out << static_cast<quint8>(cmd);
   socket.write(array_block);
   return socket.waitForBytesWritten(1000);
+}
+
+std::optional<AppServer::Command> AppServer::CommandFromString(
+    const QString& command) {
+  if (command == "prev") return Command::kPrevMonth;
+  if (command == "next") return Command::kNextMonth;
+  return std::nullopt;
 }
 
 }  // namespace calfenster
