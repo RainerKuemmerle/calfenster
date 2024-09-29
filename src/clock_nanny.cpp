@@ -37,8 +37,11 @@ void ClockNanny::AddClock(const QString& label, const QTimeZone& timezone,
 
 void ClockNanny::UpdateClocks(const QDateTime& now) {
   for (const auto& clock : clocks_) {
-    QDateTime datetime = now.toTimeZone(clock.timezone);
-    clock.time_label->setText(datetime.toString(clock.format));
+    const QDateTime datetime = now.toTimeZone(clock.timezone);
+    const QString time_as_string = clock.format.isEmpty()
+                                       ? datetime.toString(Qt::RFC2822Date)
+                                       : datetime.toString(clock.format);
+    clock.time_label->setText(time_as_string);
   }
 }
 
