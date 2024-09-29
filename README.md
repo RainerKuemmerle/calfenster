@@ -87,9 +87,9 @@ In the following `N` is an integer number with the range `[1, size]`.
 
 * `size=<int>` defaults to 0.
   How many clocks are configured in total
-* `N\label=<str>` defaults to ""
+* `N\label=<str>` defaults to "Clock N"
   Display label of the time zone.
-* `N\tz=<timezone>` defaults to "".
+* `N\tz=<timezone>` defaults to local time.
   The timezone to use for this clock.
 * `N\format=<str>` defaults to "dd MMM yyyy HH:mm:ss ±tzoff"
   The format string for formatting the datetime, see [QDateTime](https://doc.qt.io/qt-6/qdatetime.html#toString) for details.
