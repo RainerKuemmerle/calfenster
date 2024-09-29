@@ -6,12 +6,15 @@
 #include <qglobal.h>
 #include <qlocale.h>
 #include <qobject.h>
+#include <qtimezone.h>
 #include <qwidget.h>
 
 #include <cstdlib>
+#include <ctime>
 #include <optional>
 
 #include "calfenster/app_server.h"
+#include "calfenster/clock_nanny.h"
 #include "calfenster/configuration.h"
 #include "calfenster/event_filter.h"
 
@@ -59,8 +62,10 @@ int main(int argc, char* argv[]) {
   }
 
   QWidget main_widget;
-  auto* calendar_widget = new QCalendarWidget(&main_widget);
-  auto* stack_layout = new QHBoxLayout(&main_widget);
+  auto* calendar_widget = new QCalendarWidget();
+  auto* stack_layout = new QVBoxLayout(&main_widget);
+  stack_layout->setSpacing(0);
+  stack_layout->setContentsMargins(0, 0, 0, 0);
   stack_layout->addWidget(calendar_widget);
 
   // Connect signals from AppServer to CalendarWidget
@@ -77,6 +82,23 @@ int main(int argc, char* argv[]) {
 
   config.ConfigureWindow(main_widget);
   config.ConfigureCalendar(*calendar_widget);
+
+  // Add Clocks to widget
+  calfenster::ClockNanny* clock_nanny = nullptr;
+  if (!config.clocks.empty()) {
+    clock_nanny = new calfenster::ClockNanny(&main_widget, stack_layout);
+    for (const auto& clock : config.clocks) {
+      QByteArray timezone_specifier = clock.timezone.toLatin1();
+      if (!QTimeZone::isTimeZoneIdAvailable(timezone_specifier)) {
+        qWarning() << "Timezone specification" << clock.timezone
+                   << "is not valid";
+        continue;
+      }
+      QTimeZone timezone(timezone_specifier);
+      clock_nanny->AddClock(clock.label, timezone, clock.format);
+    }
+    clock_nanny->Tick();
+  }
 
   main_widget.show();
   return QApplication::exec();
