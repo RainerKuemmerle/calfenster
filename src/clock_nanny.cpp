@@ -5,7 +5,11 @@
 #include <qlabel.h>
 #include <qobject.h>
 #include <qtimer.h>
+#include <qtimezone.h>
 #include <qwidget.h>
+
+#include <iostream>
+#include <ostream>
 
 #include "calfenster/moc_clock_nanny.cpp"  // NOLINT
 
@@ -46,5 +50,13 @@ void ClockNanny::UpdateClocks(const QDateTime& now) {
 }
 
 void ClockNanny::Tick() { UpdateClocks(QDateTime::currentDateTime()); }
+
+void ClockNanny::PrintAvailableTimezones() {
+  const QList<QByteArray> zones = QTimeZone::availableTimeZoneIds();
+  for (const auto& zone : zones) {
+    std::cout << zone.toStdString() << "\n";
+  }
+  std::cout << std::flush;
+}
 
 }  // namespace calfenster
