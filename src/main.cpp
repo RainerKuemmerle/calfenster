@@ -2,6 +2,7 @@
 #include <qboxlayout.h>
 #include <qcalendarwidget.h>
 #include <qcommandlineparser.h>
+#include <qdatetime.h>
 #include <qdebug.h>
 #include <qglobal.h>
 #include <qlocale.h>
@@ -96,15 +97,19 @@ int main(int argc, char* argv[]) {
   // Add Clocks to widget
   calfenster::ClockNanny* clock_nanny = nullptr;
   if (!config.clocks.empty()) {
+    const QTimeZone default_timezone = QDateTime::currentDateTime().timeZone();
     clock_nanny = new calfenster::ClockNanny(&main_widget, stack_layout);
     for (const auto& clock : config.clocks) {
-      QByteArray timezone_specifier = clock.timezone.toLatin1();
-      if (!QTimeZone::isTimeZoneIdAvailable(timezone_specifier)) {
+      const QByteArray timezone_specifier = clock.timezone.toLatin1();
+      if (!timezone_specifier.isEmpty() &&
+          !QTimeZone::isTimeZoneIdAvailable(timezone_specifier)) {
         qWarning() << "Timezone specification" << clock.timezone
                    << "is not valid";
         continue;
       }
-      QTimeZone timezone(timezone_specifier);
+      QTimeZone timezone = clock.timezone.isEmpty()
+                               ? default_timezone
+                               : QTimeZone(timezone_specifier);
       clock_nanny->AddClock(clock.label, timezone, clock.format);
     }
     clock_nanny->Tick();

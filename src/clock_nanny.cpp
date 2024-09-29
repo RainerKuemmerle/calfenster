@@ -33,7 +33,9 @@ void ClockNanny::AddClock(const QString& label, const QTimeZone& timezone,
   clocks_.back().time_label = new QLabel(holder_widget);
 
   auto* clock_label = new QLabel(holder_widget);
-  clock_label->setText(label);
+  clock_label->setText(label.isEmpty()  // TODO(Rainer): move to main
+                           ? QString("Clock ") + QString::number(clocks_.size())
+                           : label);
 
   layout->addWidget(clock_label);
   layout->addWidget(clocks_.back().time_label);
