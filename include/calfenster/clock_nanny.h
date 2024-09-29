@@ -30,6 +30,8 @@ class ClockNanny : public QObject {
   void AddClock(const QString& label, const QTimeZone& timezone,
                 const QString& format);
 
+  static void PrintAvailableTimezones();
+
  protected:
   QVBoxLayout* parent_layout_ = nullptr;
   QTimer* timer_ = nullptr;

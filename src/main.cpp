@@ -28,8 +28,18 @@ int main(int argc, char* argv[]) {
       "command", "prev | next: Show previous or next month");
   command_line.setApplicationDescription("A simple calender widget.");
   command_line.addHelpOption();
+  // Add option to print available timezones
+  QCommandLineOption list_timezone_option(
+      "timezones", "Print a list of time zones and exit.");
+  command_line.addOption(list_timezone_option);
   // actual parsing of the command line
   command_line.process(app);
+
+  // check printing of timezones is requested
+  if (command_line.isSet(list_timezone_option)) {
+    calfenster::ClockNanny::PrintAvailableTimezones();
+    return EXIT_SUCCESS;
+  }
 
   // check the given commands
   const QStringList commands = command_line.positionalArguments();
