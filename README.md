@@ -20,11 +20,12 @@ Usage: ./calfenster [options] command
 A simple calender widget.
 
 Options:
-  -h, --help  Displays help on commandline options.
-  --help-all  Displays help including Qt specific options.
+  -h, --help   Displays help on commandline options.
+  --help-all   Displays help including Qt specific options.
+  --timezones  Print a list of time zones and exit.
 
 Arguments:
-  command     prev | next: Show previous or next month
+  command      prev | next: Show previous or next month
 ```
 
 `calfenster` upon starting shows _today_ as the highlighted date. Launching a second time will terminate the previously started instance by default. If valid commands are specified, `calfenster` will interact with the previously started instance.
@@ -67,6 +68,39 @@ window_stays_on_top=true
   The window shall stay on bottom of all windows.
 * `window_stays_on_top=<boolean>`  defaults to `true`.
   The window shall stay on top of all windows.
+
+### Clocks
+
+Optionally, a list of dates/times can be displayed if specified in the configuration file. The clocks will be updated with ~1Hz. For example, we can display the local time of New York as well as Berlin as follows:
+
+```INI
+[Clocks]
+size=2
+1\label=New York
+1\tz=America/New_York
+1\format=
+2\label=Berlin
+2\tz=Europe/Berlin
+2\format=m d HH:MM:SS
+```
+In the following `N` is an integer number with the range `[1, size]`.
+
+* `size=<int>` defaults to 0.
+  How many clocks are configured in total
+* `N\label=<str>` defaults to ""
+  Display label of the time zone.
+* `N\tz=<timezone>` defaults to "".
+  The timezone to use for this clock.
+* `N\format=<str>` defaults to "dd MMM yyyy HH:mm:ss ±tzoff"
+  The format string for formatting the datetime, see [QDateTime](https://doc.qt.io/qt-6/qdatetime.html#toString) for details.
+  Example format strings (assumed that the datetime is 21 May 2001 14:13:09.120):
+  | Format          | Result        |
+  | --------------- | ------------- |
+  | `dd.MM.yyyy`    |	21.05.2001    |
+  | `ddd MMMM d yy`	| Tue May 21 01 |
+  | `hh:mm:ss.zzz`  |	14:13:09.120  |
+  | `hh:mm:ss.z`    |	14:13:09.12   |
+  | `h:m:s ap`      |	2:13:9 pm     |
 
 ## Compilation
 
