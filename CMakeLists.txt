@@ -15,6 +15,7 @@ add_executable(calfenster
 src/configuration.cpp
 src/event_filter.cpp
 src/app_server.cpp
+src/clock_nanny.cpp
 src/main.cpp)
 
 target_compile_options(calfenster PRIVATE -Wall -Wextra -pedantic)

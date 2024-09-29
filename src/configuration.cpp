@@ -38,9 +38,10 @@ Configuration::Configuration() {
   clocks.reserve(size);
   for (int i = 0; i < size; ++i) {
     settings.setArrayIndex(i);
-    clocks.emplace_back(settings.value("label", "").toString(),
-                        settings.value("timezone", "").toString(),
-                        settings.value("format", "").toString());
+    clocks.emplace_back(
+        settings.value("label", "").toString(),
+        settings.value("tz", "").toString(),
+        settings.value("format", "yyyy-MM-dd hh:mm").toString());
   }
   settings.endArray();
 }
