@@ -107,9 +107,9 @@ int main(int argc, char* argv[]) {
                    << "is not valid";
         continue;
       }
-      QTimeZone timezone = clock.timezone.isEmpty()
-                               ? default_timezone
-                               : QTimeZone(timezone_specifier);
+      const QTimeZone timezone = clock.timezone.isEmpty()
+                                     ? default_timezone
+                                     : QTimeZone(timezone_specifier);
       clock_nanny->AddClock(clock.label, timezone, clock.format);
     }
     clock_nanny->Tick();

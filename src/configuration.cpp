@@ -1,9 +1,12 @@
 #include "calfenster/configuration.h"
 
+#include <qapplication.h>
 #include <qcalendarwidget.h>
 #include <qdebug.h>
+#include <qfont.h>
 #include <qnamespace.h>
 #include <qsettings.h>
+#include <qtextformat.h>
 #include <qwidget.h>
 
 #include <cstddef>
@@ -14,6 +17,24 @@ const QString kSettingsApp = "calfenster";
 }  // namespace
 
 namespace calfenster {
+
+namespace {
+/**
+ * @brief Obtain a singleton to Qt's default font.
+ *
+ * Wrapped into a function to delay initialization of the singleton to the first
+ * call.
+ *
+ * @return const QFont& Qt's default font.
+ */
+const QFont& DefaultFont() {
+  static const QFont kDefaultFont = qApp->font();
+  return kDefaultFont;
+}
+}  // namespace
+
+Configuration::FontConfig::FontConfig()
+    : family(DefaultFont().family()), size(DefaultFont().pointSize()) {}
 
 Configuration::Configuration() {
   QSettings settings(kSettingsOrg, kSettingsApp);
@@ -32,6 +53,19 @@ Configuration::Configuration() {
   window_position =
       settings.value("window_position", window_position).toString();
   locale = settings.value("locale", locale).toString();
+
+  auto read_font_config = [&settings](FontConfig& config) {
+    config.size = settings.value("font_size", config.size).toInt();
+    config.family = settings.value("font_family", config.family).toString();
+  };
+
+  // Fonts
+  settings.beginGroup("Calendar");
+  read_font_config(calendar_font);
+  settings.endGroup();
+  settings.beginGroup("Header");
+  read_font_config(header_font);
+  settings.endGroup();
 
   // reading clocks
   int size = settings.beginReadArray("Clocks");
@@ -56,9 +90,22 @@ Configuration::~Configuration() {
   settings.setValue("window_stays_on_top", window_stays_on_top);
   settings.setValue("window_stays_on_bottom", window_stays_on_bottom);
   settings.setValue("customize_window", customize_window);
-  if (!window_position.isEmpty())
-    settings.setValue("window_position", window_position);
+  settings.setValue("window_position", window_position);
   if (!locale.isEmpty()) settings.setValue("locale", locale);
+
+  auto write_font_config = [&settings](const FontConfig& config) {
+    settings.setValue("font_size", config.size);
+    settings.setValue("font_family", config.family);
+  };
+
+  // Fonts
+  settings.beginGroup("Calendar");
+  write_font_config(calendar_font);
+  settings.endGroup();
+  settings.beginGroup("Header");
+  write_font_config(header_font);
+  settings.endGroup();
+
   if (!clocks.empty()) {
     settings.beginWriteArray("Clocks");
     for (std::size_t i = 0; i < clocks.size(); ++i) {
@@ -91,6 +138,25 @@ void Configuration::ConfigureWindow(QWidget& widget) const {
 
 void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
   widget.setGridVisible(show_grid);
+  const std::vector<Qt::DayOfWeek> weekdays = {
+      Qt::Monday, Qt::Tuesday,  Qt::Wednesday, Qt::Thursday,
+      Qt::Friday, Qt::Saturday, Qt::Sunday};
+
+  auto update_format = [](QTextCharFormat* format, const FontConfig& config) {
+    const QFont font(
+        !config.family.isEmpty() ? config.family : DefaultFont().family(),
+        config.size > 0 ? config.size : DefaultFont().pointSize());
+    format->setFont(font);
+  };
+
+  for (auto day : weekdays) {
+    QTextCharFormat format = widget.weekdayTextFormat(day);
+    update_format(&format, calendar_font);
+    widget.setWeekdayTextFormat(day, format);
+  }
+  QTextCharFormat format = widget.headerTextFormat();
+  update_format(&format, header_font);
+  widget.setHeaderTextFormat(format);
 }
 
 }  // namespace calfenster
