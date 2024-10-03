@@ -26,6 +26,12 @@ struct Configuration {
     QString format;
   };
 
+  struct FontConfig {
+    FontConfig();
+    QString family;  ///< defaults to Qt's default font family
+    int size;
+  };
+
   Configuration();
   ~Configuration();
 
@@ -36,6 +42,10 @@ struct Configuration {
   bool window_stays_on_top = true;
   bool window_stays_on_bottom = false;
   bool customize_window = true;
+
+  // font
+  FontConfig calendar_font;
+  FontConfig header_font;
 
   // Window position
   QString window_position = "mouse";  ///< either mouse or none

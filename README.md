@@ -69,6 +69,25 @@ window_stays_on_top=true
 * `window_stays_on_top=<boolean>`  defaults to `true`.
   The window shall stay on top of all windows.
 
+### Fonts
+
+Optionally, the fonts for the calendar and the header can be specified. The default font is Qt's system font.
+
+```INI
+[Calendar]
+font_family=Sans
+font_size=10
+
+[Header]
+font_family=Sans
+font_size=10
+```
+
+* `font_family=<str>` defaults to Qt's default font family.
+  The font family to use for display.
+* `font_size=<int>` defaults to Qt's default font size.
+  The font size to use for display.
+
 ### Clocks
 
 Optionally, a list of dates/times can be displayed if specified in the configuration file. The clocks will be updated with ~1Hz. For example, we can display the local time of New York as well as Berlin as follows:

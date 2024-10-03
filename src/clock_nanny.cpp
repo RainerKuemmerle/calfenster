@@ -56,7 +56,7 @@ void ClockNanny::Tick() { UpdateClocks(QDateTime::currentDateTime()); }
 void ClockNanny::PrintAvailableTimezones() {
   const QList<QByteArray> zones = QTimeZone::availableTimeZoneIds();
   for (const auto& zone : zones) {
-    std::cout << zone.toStdString() << "\n";
+    std::cout << zone.toStdString() << '\n';
   }
   std::cout << std::flush;
 }
