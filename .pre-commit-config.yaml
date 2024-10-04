@@ -14,3 +14,13 @@ repos:
     rev: v19.1.0
     hooks:
     -   id: clang-format
+
+# Python
+-   repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+-   repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+    -   id: black
