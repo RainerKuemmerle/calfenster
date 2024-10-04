@@ -27,3 +27,12 @@ target_compile_options(calfenster PRIVATE -Wall -Wextra -pedantic)
 target_include_directories(calfenster PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(calfenster PRIVATE Qt${CALFENSTER_QTVERSION}::Core
   Qt${CALFENSTER_QTVERSION}::Widgets Qt${CALFENSTER_QTVERSION}::Network)
+
+include(GNUInstallDirs)
+install(TARGETS calfenster
+    EXPORT calfenster
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
