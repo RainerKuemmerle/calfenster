@@ -1,0 +1,26 @@
+Source: calfenster
+Section: misc
+Priority: optional
+Maintainer: Rainer Kuemmerle <rainer.kuemmerle@gmail.com>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+ qt6-base-dev,
+ libglx-dev,
+ libgl1-mesa-dev,
+ cmake,
+Standards-Version: 4.6.2
+Homepage: https://github.com/RainerKuemmerle/calfenster
+
+Package: calfenster
+Architecture: any
+Multi-Arch: foreign
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Suggests: tint2, openbox
+Description: simple GUI calendar application
+ calfenster displays a simple calendar widget.
+ .
+ Its primary use case is integration into a taskbar launcher to quickly see
+ a calendar widget. The widget shown is Qt's QCalendarWidget.
