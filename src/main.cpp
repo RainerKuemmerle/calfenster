@@ -16,15 +16,18 @@
 
 #include "calfenster/app_server.h"
 #include "calfenster/clock_nanny.h"
+#include "calfenster/config.h"
 #include "calfenster/configuration.h"
 #include "calfenster/event_filter.h"
 
 int main(int argc, char* argv[]) {
   QApplication app(argc, argv);
   QCoreApplication::setApplicationName("CalFenster");
+  QCoreApplication::setApplicationVersion(CALFENSTER_VERSION);
 
   // Command line parsing
   QCommandLineParser command_line;
+  command_line.addVersionOption();
   command_line.addPositionalArgument(
       "command", "prev | next: Show previous or next month");
   command_line.setApplicationDescription("A simple calender widget.");

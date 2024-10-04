@@ -1,0 +1,3 @@
+#pragma once
+
+#cmakedefine CALFENSTER_VERSION "@CALFENSTER_VERSION@"

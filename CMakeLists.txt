@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(calfenster VERSION 0.0.1 DESCRIPTION "A dialog app displaying a calendar")
+set(CALFENSTER_VERSION "0.1.0")
+
+project(calfenster VERSION ${CALFENSTER_VERSION} DESCRIPTION "A dialog app displaying a calendar")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -10,6 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CALFENSTER_QTVERSION "6" CACHE STRING "Which Qt version to use. 6|5")
 find_package(Qt${CALFENSTER_QTVERSION} COMPONENTS Core Widgets Network REQUIRED)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+${CMAKE_CURRENT_SOURCE_DIR}/include/calfenster/config.h)
 
 add_executable(calfenster
 src/configuration.cpp
