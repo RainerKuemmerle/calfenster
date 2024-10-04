@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(CALFENSTER_VERSION "0.1.2")
+set(CALFENSTER_VERSION "0.1.3")
 
 project(calfenster VERSION ${CALFENSTER_VERSION} DESCRIPTION "A dialog app displaying a calendar")
 
