@@ -1,0 +1,23 @@
+name: Package
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: jtdor/build-deb-action@v1
+      env:
+        DEB_BUILD_OPTIONS: noautodbgsym
+      with:
+        buildpackage-opts: --build=binary --no-sign
+        # https://hub.docker.com/_/ubuntu/
+        # https://hub.docker.com/_/debian
+        docker-image: ubuntu:noble
