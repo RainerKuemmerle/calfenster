@@ -1,4 +1,4 @@
-name: Package
+name: Release
 
 on:
   push:
@@ -21,3 +21,12 @@ jobs:
         # https://hub.docker.com/_/ubuntu/
         # https://hub.docker.com/_/debian
         docker-image: ubuntu:noble
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        generate_release_notes: true
+        append_body: true
+        files: |
+          ${{github.workspace}}/debian/artifacts/*.deb
