@@ -16,9 +16,9 @@ jobs:
       matrix:
         qt:
           - version: 5
-            packages: qtbase5-dev qtbase5-dev-tools
+            packages: qtbase5-dev
           - version: 6
-            packages: qt6-tools-dev qt6-base-dev libglx-dev libgl1-mesa-dev
+            packages: qt6-base-dev libglx-dev libgl1-mesa-dev
     runs-on: ubuntu-latest
 
     steps:
