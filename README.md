@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/RainerKuemmerle/calfenster/actions/workflows/ci.yml/badge.svg)](https://github.com/RainerKuemmerle/calfenster/actions/workflows/ci.yml) ![GitHub License](https://img.shields.io/github/license/RainerKuemmerle/calfenster) ![GitHub top language](https://img.shields.io/github/languages/top/RainerKuemmerle/calfenster) [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 
-calfenster displays a simple calendar widget. It's primary use case is integration into a taskbar launcher to quickly see a calendar widget. The widget shown is Qt's [QCalendarWidget](https://doc.qt.io/qt-6/qcalendarwidget.html).
+calfenster displays a simple calendar widget. Its primary use case is integration into a taskbar launcher to quickly see a calendar widget. The widget shown is Qt's [QCalendarWidget](https://doc.qt.io/qt-6/qcalendarwidget.html).
 
 Currently, calfenster is only tested on Linux but might run also on other platforms.
 
@@ -17,15 +17,16 @@ Look & feel can be adjusted by Qt theme, for example, using qt5ct / qt6ct depend
 ```
 $ ./calfenster -h
 Usage: ./calfenster [options] command
-A simple calender widget.
+A simple GUI calender.
 
 Options:
-  -h, --help   Displays help on commandline options.
-  --help-all   Displays help including Qt specific options.
-  --timezones  Print a list of time zones and exit.
+  -v, --version  Displays version information.
+  -h, --help     Displays help on commandline options.
+  --help-all     Displays help including Qt specific options.
+  --timezones    Print a list of time zones and exit.
 
 Arguments:
-  command      prev | next: Show previous or next month
+  command        prev | next: Show previous or next month
 ```
 
 `calfenster` upon starting shows _today_ as the highlighted date. Launching a second time will terminate the previously started instance by default. If valid commands are specified, `calfenster` will interact with the previously started instance.

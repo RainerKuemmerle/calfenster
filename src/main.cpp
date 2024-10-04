@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
   command_line.addVersionOption();
   command_line.addPositionalArgument(
       "command", "prev | next: Show previous or next month");
-  command_line.setApplicationDescription("A simple calender widget.");
+  command_line.setApplicationDescription("A simple GUI calender.");
   command_line.addHelpOption();
   // Add option to print available timezones
   QCommandLineOption list_timezone_option(
