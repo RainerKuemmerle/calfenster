@@ -18,7 +18,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: jtdor/build-deb-action@v1
+    - name: Build debian package
+      uses: jtdor/build-deb-action@v1
       env:
         DEB_BUILD_OPTIONS: noautodbgsym
       with:
@@ -27,11 +28,10 @@ jobs:
         # https://hub.docker.com/_/debian
         docker-image: ubuntu:noble
 
-    - name: Release
+    - name: Create github Release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
         generate_release_notes: true
-        append_body: true
         files: |
           ${{github.workspace}}/debian/artifacts/*.deb
