@@ -43,7 +43,7 @@ Below an example configuration file featuring the default settings.
 [General]
 customize_window=true
 frameless_window=true
-locale=de_DE
+show_grid=true
 skip_task_bar=true
 window_no_shadow=false
 window_position=mouse
@@ -59,15 +59,17 @@ window_stays_on_top=true
   If activated produces a frameless window.
 * `locale=<str>` defaults to `""`, i.e., the system's default locale.
   The entry `locale` allows to override the environment locale. It also determines calendar related settings such as the first day of the week.
-* `skip_task_bar=<boolean>`  defaults to `true`.
+* `show_grid=<boolean>` defaults to `true`.
+  Renders the calendar with a grid in between cells.
+* `skip_task_bar=<boolean>` defaults to `true`.
   Asks the window manager to skip showing the window in the taskbar.
-* `window_no_shadow=<boolean>`  defaults to `false`.
+* `window_no_shadow=<boolean>` defaults to `false`.
   If supported deactivate the window's shadow.
-* `window_position=<str>`, defaults to `mouse`.
+* `window_position=<str>` defaults to `mouse`.
   If `mouse` positions the window next to the mouse cursor.
-* `window_stays_on_bottom=<boolean>`  defaults to `false`.
+* `window_stays_on_bottom=<boolean>` defaults to `false`.
   The window shall stay on bottom of all windows.
-* `window_stays_on_top=<boolean>`  defaults to `true`.
+* `window_stays_on_top=<boolean>` defaults to `true`.
   The window shall stay on top of all windows.
 
 ### Fonts
