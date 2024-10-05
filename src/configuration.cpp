@@ -39,6 +39,8 @@ Configuration::FontConfig::FontConfig()
 Configuration::Configuration() {
   QSettings settings(kSettingsOrg, kSettingsApp);
   save_on_exit = settings.allKeys().isEmpty();
+
+  // Window settings
   skip_task_bar = settings.value("skip_task_bar", skip_task_bar).toBool();
   frameless_window =
       settings.value("frameless_window", frameless_window).toBool();
@@ -52,6 +54,10 @@ Configuration::Configuration() {
       settings.value("customize_window", customize_window).toBool();
   window_position =
       settings.value("window_position", window_position).toString();
+
+  // Calendar display
+  show_grid = settings.value("show_grid", show_grid).toBool();
+
   locale = settings.value("locale", locale).toString();
 
   auto read_font_config = [&settings](FontConfig& config) {
@@ -84,6 +90,8 @@ Configuration::~Configuration() {
   if (!save_on_exit) return;
   // Create a configuration with default values
   QSettings settings(kSettingsOrg, kSettingsApp);
+
+  // Window settings
   settings.setValue("skip_task_bar", skip_task_bar);
   settings.setValue("frameless_window", frameless_window);
   settings.setValue("window_no_shadow", window_no_shadow);
@@ -91,6 +99,10 @@ Configuration::~Configuration() {
   settings.setValue("window_stays_on_bottom", window_stays_on_bottom);
   settings.setValue("customize_window", customize_window);
   settings.setValue("window_position", window_position);
+
+  // Calendar display
+  settings.setValue("show_grid", show_grid);
+
   if (!locale.isEmpty()) settings.setValue("locale", locale);
 
   auto write_font_config = [&settings](const FontConfig& config) {
