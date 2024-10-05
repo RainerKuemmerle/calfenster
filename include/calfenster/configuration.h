@@ -9,6 +9,8 @@ class QCalendarWidget;
 
 namespace calfenster {
 
+class ClockNanny;
+
 /**
  * @brief The configuration class of our nice little tool.
  */
@@ -46,6 +48,7 @@ struct Configuration {
   // font
   FontConfig calendar_font;
   FontConfig header_font;
+  FontConfig clock_font;
 
   // Window position
   QString window_position = "mouse";  ///< either mouse or none
@@ -58,6 +61,7 @@ struct Configuration {
 
   void ConfigureWindow(QWidget& widget) const;
   void ConfigureCalendar(QCalendarWidget& widget) const;
+  void ConfigureClockNanny(ClockNanny& nanny) const;
 
   bool save_on_exit = false;
 };

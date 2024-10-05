@@ -11,6 +11,8 @@
 
 #include <cstddef>
 
+#include "calfenster/clock_nanny.h"
+
 namespace {
 const QString kSettingsOrg = "calfenster";
 const QString kSettingsApp = "calfenster";
@@ -31,6 +33,14 @@ const QFont& DefaultFont() {
   static const QFont kDefaultFont = qApp->font();
   return kDefaultFont;
 }
+
+QFont CreateFont(const calfenster::Configuration::FontConfig& config) {
+  const QFont font(
+      !config.family.isEmpty() ? config.family : DefaultFont().family(),
+      config.size > 0 ? config.size : DefaultFont().pointSize());
+  return font;
+};
+
 }  // namespace
 
 Configuration::FontConfig::FontConfig()
@@ -71,6 +81,9 @@ Configuration::Configuration() {
   settings.endGroup();
   settings.beginGroup("Header");
   read_font_config(header_font);
+  settings.endGroup();
+  settings.beginGroup("Clocks");
+  read_font_config(clock_font);
   settings.endGroup();
 
   // reading clocks
@@ -119,6 +132,9 @@ Configuration::~Configuration() {
   settings.endGroup();
 
   if (!clocks.empty()) {
+    settings.beginGroup("Clocks");
+    write_font_config(clock_font);
+    settings.endGroup();
     settings.beginWriteArray("Clocks");
     for (std::size_t i = 0; i < clocks.size(); ++i) {
       settings.setArrayIndex(i);
@@ -154,21 +170,24 @@ void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
       Qt::Monday, Qt::Tuesday,  Qt::Wednesday, Qt::Thursday,
       Qt::Friday, Qt::Saturday, Qt::Sunday};
 
-  auto update_format = [](QTextCharFormat* format, const FontConfig& config) {
-    const QFont font(
-        !config.family.isEmpty() ? config.family : DefaultFont().family(),
-        config.size > 0 ? config.size : DefaultFont().pointSize());
-    format->setFont(font);
-  };
-
+  const QFont qt_calendar_font = CreateFont(calendar_font);
   for (auto day : weekdays) {
     QTextCharFormat format = widget.weekdayTextFormat(day);
-    update_format(&format, calendar_font);
+    format.setFont(qt_calendar_font);
     widget.setWeekdayTextFormat(day, format);
   }
   QTextCharFormat format = widget.headerTextFormat();
-  update_format(&format, header_font);
+  format.setFont(CreateFont(header_font));
   widget.setHeaderTextFormat(format);
+}
+
+void Configuration::ConfigureClockNanny(ClockNanny& nanny) const {
+  if (nanny.Clocks().empty()) return;
+  const QFont font = CreateFont(clock_font);
+  for (auto& clock : nanny.Clocks()) {
+    clock.clock_label->setFont(font);
+    clock.time_label->setFont(font);
+  }
 }
 
 }  // namespace calfenster
