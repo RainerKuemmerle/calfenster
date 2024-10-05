@@ -19,6 +19,7 @@ class ClockNanny : public QObject {
         : timezone(timezone), format(std::move(format)) {}
     QTimeZone timezone;
     QString format;
+    QLabel* clock_label = nullptr;
     QLabel* time_label = nullptr;
   };
 
@@ -31,6 +32,9 @@ class ClockNanny : public QObject {
                 const QString& format);
 
   static void PrintAvailableTimezones();
+
+  std::vector<Clock>& Clocks() { return clocks_; }
+  [[nodiscard]] const std::vector<Clock>& Clocks() const { return clocks_; }
 
  protected:
   QVBoxLayout* parent_layout_ = nullptr;

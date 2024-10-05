@@ -94,9 +94,6 @@ int main(int argc, char* argv[]) {
   main_widget.installEventFilter(event_filter);
   calendar_widget->installEventFilter(event_filter);
 
-  config.ConfigureWindow(main_widget);
-  config.ConfigureCalendar(*calendar_widget);
-
   // Add Clocks to widget
   calfenster::ClockNanny* clock_nanny = nullptr;
   if (!config.clocks.empty()) {
@@ -117,6 +114,10 @@ int main(int argc, char* argv[]) {
     }
     clock_nanny->Tick();
   }
+
+  config.ConfigureWindow(main_widget);
+  config.ConfigureCalendar(*calendar_widget);
+  if (clock_nanny) config.ConfigureClockNanny(*clock_nanny);
 
   main_widget.show();
   return QApplication::exec();

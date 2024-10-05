@@ -97,6 +97,8 @@ Optionally, a list of dates/times can be displayed if specified in the configura
 
 ```INI
 [Clocks]
+font_family=Sans
+font_size=10
 size=2
 1\label=New York
 1\tz=America/New_York
@@ -107,6 +109,10 @@ size=2
 ```
 In the following `N` is an integer number with the range `[1, size]`.
 
+* `font_family=<str>` defaults to Qt's default font family.
+  The font family to use for display.
+* `font_size=<int>` defaults to Qt's default font size.
+  The font size to use for display.
 * `size=<int>` defaults to 0.
   How many clocks are configured in total
 * `N\label=<str>` defaults to "Clock N"

@@ -30,16 +30,17 @@ void ClockNanny::AddClock(const QString& label, const QTimeZone& timezone,
   auto* layout = new QHBoxLayout(holder_widget);
   layout->setContentsMargins(5, 2, 5, 2);
 
-  clocks_.emplace_back(timezone, format);
-  clocks_.back().time_label = new QLabel(holder_widget);
+  Clock& clock = clocks_.emplace_back(timezone, format);
+  clock.time_label = new QLabel(holder_widget);
 
-  auto* clock_label = new QLabel(holder_widget);
-  clock_label->setText(label.isEmpty()  // TODO(Rainer): move to main
-                           ? QString("Clock ") + QString::number(clocks_.size())
-                           : label);
+  clock.clock_label = new QLabel(holder_widget);
+  // TODO(Rainer): move to main
+  clock.clock_label->setText(
+      label.isEmpty() ? QString("Clock ") + QString::number(clocks_.size())
+                      : label);
 
-  layout->addWidget(clock_label, 0, Qt::AlignLeft);
-  layout->addWidget(clocks_.back().time_label, 0, Qt::AlignRight);
+  layout->addWidget(clock.clock_label, 0, Qt::AlignLeft);
+  layout->addWidget(clock.time_label, 0, Qt::AlignRight);
 }
 
 void ClockNanny::UpdateClocks(const QDateTime& now) {
