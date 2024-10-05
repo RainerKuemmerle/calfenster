@@ -4,6 +4,7 @@
 #include <qcalendarwidget.h>
 #include <qdebug.h>
 #include <qfont.h>
+#include <qglobal.h>
 #include <qnamespace.h>
 #include <qsettings.h>
 #include <qtextformat.h>
@@ -41,6 +42,15 @@ QFont CreateFont(const calfenster::Configuration::FontConfig& config) {
   return font;
 };
 
+QCalendarWidget::HorizontalHeaderFormat ToHorizontalHeaderFormat(
+    QString header) {
+  header = header.toLower().trimmed();
+  if (header == "single") return QCalendarWidget::SingleLetterDayNames;
+  if (header == "short") return QCalendarWidget::ShortDayNames;
+  if (header == "long") return QCalendarWidget::LongDayNames;
+  return QCalendarWidget::NoHorizontalHeader;
+}
+
 }  // namespace
 
 Configuration::FontConfig::FontConfig()
@@ -67,6 +77,9 @@ Configuration::Configuration() {
 
   // Calendar display
   show_grid = settings.value("show_grid", show_grid).toBool();
+  show_iso_week = settings.value("show_iso_week", show_iso_week).toBool();
+  horizontal_header =
+      settings.value("horizontal_header", horizontal_header).toString();
 
   locale = settings.value("locale", locale).toString();
 
@@ -115,6 +128,8 @@ Configuration::~Configuration() {
 
   // Calendar display
   settings.setValue("show_grid", show_grid);
+  settings.setValue("show_iso_week", show_iso_week);
+  settings.setValue("horizontal_header", horizontal_header);
 
   if (!locale.isEmpty()) settings.setValue("locale", locale);
 
@@ -157,7 +172,7 @@ void Configuration::ConfigureWindow(QWidget& widget) const {
 
   widget.setWindowFlags(flags);
 
-  if (window_position == "mouse") {
+  if (window_position.toLower().trimmed() == "mouse") {
     QPoint cursor_pos = QCursor::pos();
     cursor_pos.setY(cursor_pos.y() - widget.sizeHint().height());
     widget.move(cursor_pos);
@@ -170,6 +185,7 @@ void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
       Qt::Monday, Qt::Tuesday,  Qt::Wednesday, Qt::Thursday,
       Qt::Friday, Qt::Saturday, Qt::Sunday};
 
+  // Fonts
   const QFont qt_calendar_font = CreateFont(calendar_font);
   for (auto day : weekdays) {
     QTextCharFormat format = widget.weekdayTextFormat(day);
@@ -179,6 +195,14 @@ void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
   QTextCharFormat format = widget.headerTextFormat();
   format.setFont(CreateFont(header_font));
   widget.setHeaderTextFormat(format);
+
+  // HorizontalHeader
+  widget.setHorizontalHeaderFormat(ToHorizontalHeaderFormat(horizontal_header));
+
+  // VerticalHeader
+  widget.setVerticalHeaderFormat(show_iso_week
+                                     ? QCalendarWidget::ISOWeekNumbers
+                                     : QCalendarWidget::NoVerticalHeader);
 }
 
 void Configuration::ConfigureClockNanny(ClockNanny& nanny) const {
