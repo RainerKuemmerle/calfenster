@@ -24,7 +24,7 @@ src/clock_nanny.cpp
 src/main.cpp)
 
 target_compile_options(calfenster PRIVATE -Wall -Wextra -pedantic)
-target_include_directories(calfenster PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(calfenster PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(calfenster PRIVATE Qt${CALFENSTER_QTVERSION}::Core
   Qt${CALFENSTER_QTVERSION}::Widgets Qt${CALFENSTER_QTVERSION}::Network)
 
