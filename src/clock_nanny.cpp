@@ -3,6 +3,7 @@
 #include <qboxlayout.h>
 #include <qdatetime.h>
 #include <qlabel.h>
+#include <qnamespace.h>
 #include <qobject.h>
 #include <qtimer.h>
 #include <qtimezone.h>
@@ -37,8 +38,8 @@ void ClockNanny::AddClock(const QString& label, const QTimeZone& timezone,
                            ? QString("Clock ") + QString::number(clocks_.size())
                            : label);
 
-  layout->addWidget(clock_label);
-  layout->addWidget(clocks_.back().time_label);
+  layout->addWidget(clock_label, 0, Qt::AlignLeft);
+  layout->addWidget(clocks_.back().time_label, 0, Qt::AlignRight);
 }
 
 void ClockNanny::UpdateClocks(const QDateTime& now) {

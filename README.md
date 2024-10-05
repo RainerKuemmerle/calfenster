@@ -103,7 +103,7 @@ size=2
 1\format=
 2\label=Berlin
 2\tz=Europe/Berlin
-2\format=m d HH:MM:SS
+2\format=MMM d hh:mm:ss
 ```
 In the following `N` is an integer number with the range `[1, size]`.
 
