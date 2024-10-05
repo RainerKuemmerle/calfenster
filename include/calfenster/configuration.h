@@ -56,6 +56,8 @@ struct Configuration {
 
   // Calender display options
   bool show_grid = true;
+  bool show_iso_week = true;
+  QString horizontal_header = "short";
 
   std::vector<Clock> clocks;  ///< the clocks configured in the config file
 

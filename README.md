@@ -43,7 +43,9 @@ Below an example configuration file featuring the default settings.
 [General]
 customize_window=true
 frameless_window=true
+horizontal_header=short
 show_grid=true
+show_iso_week=true
 skip_task_bar=true
 window_no_shadow=false
 window_position=mouse
@@ -57,10 +59,14 @@ window_stays_on_top=true
   Controls whether the window has the default window title hints.
 * `frameless_window=<boolean>` defaults to `true`.
   If activated produces a frameless window.
+* `horizontal_header=<str>` defaults to `short`.
+  Specifies how to display the horizontal weekday header. The following styles are supported: `[short, single, long, none]`.
 * `locale=<str>` defaults to `""`, i.e., the system's default locale.
   The entry `locale` allows to override the environment locale. It also determines calendar related settings such as the first day of the week.
 * `show_grid=<boolean>` defaults to `true`.
   Renders the calendar with a grid in between cells.
+* `show_iso_week=<boolean>` defaults to `true`.
+  Display the ISO week number as vertical header.
 * `skip_task_bar=<boolean>` defaults to `true`.
   Asks the window manager to skip showing the window in the taskbar.
 * `window_no_shadow=<boolean>` defaults to `false`.
@@ -150,7 +156,7 @@ cmake ..
 make
 ```
 
-You can use `cmake -DCALFENSTER_QTVERSION=5` to use Qt5 instead of the default Qt6.
+You can use `cmake -DCALFENSTER_QTVERSION=5 ..` to use Qt5 instead of the default Qt6.
 
 ## Acknowledgements
 
