@@ -26,7 +26,7 @@ Options:
   --timezones    Print a list of time zones and exit.
 
 Arguments:
-  command        prev | next: Show previous or next month
+  command        prev | next: Show previous or next month.
 ```
 
 `calfenster` upon starting shows _today_ as the highlighted date. Launching a second time will terminate the previously started instance by default. If valid commands are specified, `calfenster` will interact with the previously started instance.
