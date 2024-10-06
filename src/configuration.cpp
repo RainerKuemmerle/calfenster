@@ -1,7 +1,9 @@
 #include "calfenster/configuration.h"
 
 #include <qapplication.h>
+#include <qbrush.h>
 #include <qcalendarwidget.h>
+#include <qcolor.h>
 #include <qdebug.h>
 #include <qfont.h>
 #include <qglobal.h>
@@ -11,6 +13,7 @@
 #include <qwidget.h>
 
 #include <cstddef>
+#include <regex>
 
 #include "calfenster/clock_nanny.h"
 
@@ -35,12 +38,38 @@ const QFont& DefaultFont() {
   return kDefaultFont;
 }
 
+//! Converts #RRGGBB to a QColor
+QColor ToColor(const std::string& color_str) {
+  const std::regex pattern("#([0-9a-fA-F]{6})");
+  std::smatch match;
+  if (!std::regex_match(color_str, match, pattern)) return QColor();
+  unsigned int r, g, b;  // NOLINT
+  sscanf(match.str(1).c_str(), "%2x%2x%2x", &r, &g, &b);
+  return QColor(r, g, b);
+}
+
 QFont CreateFont(const calfenster::Configuration::FontConfig& config) {
   const QFont font(
       !config.family.isEmpty() ? config.family : DefaultFont().family(),
       config.size > 0 ? config.size : DefaultFont().pointSize());
   return font;
 };
+
+QTextCharFormat UpdateFormat(
+    const QTextCharFormat& format,
+    const calfenster::Configuration::FontConfig& config) {
+  QTextCharFormat result = format;
+  result.setFont(CreateFont(config));
+  if (!config.fg.isEmpty()) {
+    QColor color = ToColor(config.fg.toStdString());
+    if (color.isValid()) result.setForeground(QBrush(color));
+  }
+  if (!config.bg.isEmpty()) {
+    QColor color = ToColor(config.bg.toStdString());
+    if (color.isValid()) result.setBackground(QBrush(color));
+  }
+  return result;
+}
 
 QCalendarWidget::HorizontalHeaderFormat ToHorizontalHeaderFormat(
     QString header) {
@@ -86,6 +115,8 @@ Configuration::Configuration() {
   auto read_font_config = [&settings](FontConfig& config) {
     config.size = settings.value("font_size", config.size).toInt();
     config.family = settings.value("font_family", config.family).toString();
+    config.fg = settings.value("fg", config.fg).toString();
+    config.bg = settings.value("bg", config.bg).toString();
   };
 
   // Fonts
@@ -136,6 +167,8 @@ Configuration::~Configuration() {
   auto write_font_config = [&settings](const FontConfig& config) {
     settings.setValue("font_size", config.size);
     settings.setValue("font_family", config.family);
+    settings.setValue("fg", config.fg);
+    settings.setValue("bg", config.bg);
   };
 
   // Fonts
@@ -181,20 +214,17 @@ void Configuration::ConfigureWindow(QWidget& widget) const {
 
 void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
   widget.setGridVisible(show_grid);
-  const std::vector<Qt::DayOfWeek> weekdays = {
+  static const std::vector<Qt::DayOfWeek> kWeekdays = {
       Qt::Monday, Qt::Tuesday,  Qt::Wednesday, Qt::Thursday,
       Qt::Friday, Qt::Saturday, Qt::Sunday};
 
   // Fonts
-  const QFont qt_calendar_font = CreateFont(calendar_font);
-  for (auto day : weekdays) {
-    QTextCharFormat format = widget.weekdayTextFormat(day);
-    format.setFont(qt_calendar_font);
-    widget.setWeekdayTextFormat(day, format);
+  widget.setHeaderTextFormat(
+      UpdateFormat(widget.headerTextFormat(), header_font));
+  for (const auto& day : kWeekdays) {
+    widget.setWeekdayTextFormat(
+        day, UpdateFormat(widget.weekdayTextFormat(day), calendar_font));
   }
-  QTextCharFormat format = widget.headerTextFormat();
-  format.setFont(CreateFont(header_font));
-  widget.setHeaderTextFormat(format);
 
   // HorizontalHeader
   widget.setHorizontalHeaderFormat(ToHorizontalHeaderFormat(horizontal_header));
