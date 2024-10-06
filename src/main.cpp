@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
   QCommandLineParser command_line;
   command_line.addVersionOption();
   command_line.addPositionalArgument(
-      "command", "prev | next: Show previous or next month");
+      "command", "prev | next: Show previous or next month.");
   command_line.setApplicationDescription("A simple GUI calender.");
   command_line.addHelpOption();
   // Add option to print available timezones
