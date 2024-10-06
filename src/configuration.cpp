@@ -82,9 +82,6 @@ QCalendarWidget::HorizontalHeaderFormat ToHorizontalHeaderFormat(
 
 }  // namespace
 
-Configuration::FontConfig::FontConfig()
-    : family(DefaultFont().family()), size(DefaultFont().pointSize()) {}
-
 Configuration::Configuration() {
   QSettings settings(kSettingsOrg, kSettingsApp);
   save_on_exit = settings.allKeys().isEmpty();
@@ -165,7 +162,11 @@ Configuration::~Configuration() {
   if (!locale.isEmpty()) settings.setValue("locale", locale);
 
   auto write_font_config = [&settings](const FontConfig& config) {
-    settings.setValue("font_size", config.size);
+    if (config.size > 0) {
+      settings.setValue("font_size", config.size);
+    } else {
+      settings.setValue("font_size", "");
+    }
     settings.setValue("font_family", config.family);
     settings.setValue("fg", config.fg);
     settings.setValue("bg", config.bg);
