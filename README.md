@@ -84,14 +84,22 @@ Optionally, the fonts for the calendar and the header can be specified. The defa
 
 ```INI
 [Calendar]
+bg=
+fg=
 font_family=Sans
 font_size=10
 
 [Header]
+bg=
+fg=
 font_family=Sans
 font_size=10
 ```
 
+* `bg=<color>` defaults to `""`.
+  Background color as hexadecimal RGB #RRGGBB.
+* `fg=<color>` defaults to `""`.
+  Foreground color as hexadecimal RGB #RRGGBB.
 * `font_family=<str>` defaults to Qt's default font family.
   The font family to use for display.
 * `font_size=<int>` defaults to Qt's default font size.

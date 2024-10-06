@@ -32,6 +32,8 @@ struct Configuration {
     FontConfig();
     QString family;  ///< defaults to Qt's default font family
     int size;
+    QString fg = "";
+    QString bg = "";
   };
 
   Configuration();
