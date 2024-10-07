@@ -151,9 +151,9 @@ In the following `N` is an integer number with the range `[1, size]`.
 On Debian/Ubuntu you can install the required Qt development files with
 ```
 # Qt6
-sudo apt install qt6-base-dev qt6-tools-dev
+sudo apt install qt6-base-dev
 # Qt5
-sudo apt install qtbase5-dev qtbase5-dev-tools
+sudo apt install qtbase5-dev
 ```
 
 Building follows the standard pattern of a CMake based project. For example, on Linux with the default Makefile generator.
