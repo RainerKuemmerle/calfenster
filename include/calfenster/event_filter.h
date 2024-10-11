@@ -1,9 +1,9 @@
 #pragma once
 
 #include <qobject.h>
-#include <qwidget.h>
 
-// #include "event_filter.moc"
+class QWidget;
+class QCalendarWidget;
 
 namespace calfenster {
 
@@ -13,7 +13,7 @@ class EventFilter : public QObject {
   explicit EventFilter(QObject* parent = nullptr);
 
   QWidget* main_widget = nullptr;
-  QWidget* calendar_widget = nullptr;
+  QCalendarWidget* calendar_widget = nullptr;
 
  protected:
   bool eventFilter(QObject* obj, QEvent* event) override;
