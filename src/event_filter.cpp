@@ -1,9 +1,12 @@
 #include "calfenster/event_filter.h"
 
 #include <qapplication.h>
+#include <qcalendarwidget.h>
 #include <qcoreevent.h>
+#include <qdatetime.h>
 #include <qevent.h>
 #include <qeventloop.h>
+#include <qglobal.h>
 #include <qnamespace.h>
 #include <qobject.h>
 #include <qwidget.h>
@@ -25,6 +28,14 @@ bool EventFilter::eventFilter(QObject* obj, QEvent* event) {
         (key_event->modifiers() == Qt::ControlModifier &&
          key_event->key() == Qt::Key_Q)) {
       qApp->exit();
+      return true;
+    }
+    if (calendar_widget != nullptr &&
+        key_event->modifiers() == Qt::ControlModifier &&
+        key_event->key() == Qt::Key_G) {
+      calendar_widget->setSelectedDate(QDate::currentDate());
+      calendar_widget->showSelectedDate();
+      key_event->accept();
       return true;
     }
   }
