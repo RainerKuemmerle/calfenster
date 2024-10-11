@@ -7,6 +7,7 @@
 #include <qdebug.h>
 #include <qfont.h>
 #include <qglobal.h>
+#include <qlist.h>
 #include <qnamespace.h>
 #include <qsettings.h>
 #include <qtextformat.h>
@@ -14,6 +15,8 @@
 
 #include <cstddef>
 #include <regex>
+#include <set>
+#include <vector>
 
 #include "calfenster/clock_nanny.h"
 
@@ -46,6 +49,24 @@ QColor ToColor(const std::string& color_str) {
   unsigned int r, g, b;  // NOLINT
   sscanf(match.str(1).c_str(), "%2x%2x%2x", &r, &g, &b);
   return QColor(r, g, b);
+}
+
+QStringList ToStringList(const std::set<int>& ints) {
+  QStringList result;
+  for (auto i : ints) {
+    result.append(QString::number(i));
+  }
+  return result;
+}
+
+std::set<int> ToIntSet(const QStringList& list) {
+  std::set<int> result;
+  for (const auto& s : list) {
+    bool ok = true;
+    int i = s.toInt(&ok);
+    if (ok) result.insert(i);
+  }
+  return result;
 }
 
 QFont CreateFont(const calfenster::Configuration::FontConfig& config) {
@@ -81,6 +102,11 @@ QCalendarWidget::HorizontalHeaderFormat ToHorizontalHeaderFormat(
 }
 
 }  // namespace
+
+Configuration::WeekdayConfig::WeekdayConfig() {
+  font.fg = "#ff0000";
+  days = {Qt::Saturday, Qt::Sunday};
+}
 
 Configuration::Configuration() {
   QSettings settings(kSettingsOrg, kSettingsApp);
@@ -125,6 +151,13 @@ Configuration::Configuration() {
   settings.endGroup();
   settings.beginGroup("Clocks");
   read_font_config(clock_font);
+  settings.endGroup();
+
+  // Weekday Fonts
+  settings.beginGroup("Weekdays");
+  weekday_font.days = ToIntSet(
+      settings.value("days", ToStringList(weekday_font.days)).toStringList());
+  read_font_config(weekday_font.font);
   settings.endGroup();
 
   // reading clocks
@@ -180,6 +213,12 @@ Configuration::~Configuration() {
   write_font_config(header_font);
   settings.endGroup();
 
+  // Weekday Fonts
+  settings.beginGroup("Weekdays");
+  settings.setValue("days", ToStringList(weekday_font.days));
+  write_font_config(weekday_font.font);
+  settings.endGroup();
+
   if (!clocks.empty()) {
     settings.beginGroup("Clocks");
     write_font_config(clock_font);
@@ -215,16 +254,24 @@ void Configuration::ConfigureWindow(QWidget& widget) const {
 
 void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
   widget.setGridVisible(show_grid);
+
+  // Undo widget highlighting Saturday / Sunday
+  widget.setWeekdayTextFormat(Qt::Saturday,
+                              widget.weekdayTextFormat(Qt::Monday));
+  widget.setWeekdayTextFormat(Qt::Sunday, widget.weekdayTextFormat(Qt::Monday));
+
   static const std::vector<Qt::DayOfWeek> kWeekdays = {
       Qt::Monday, Qt::Tuesday,  Qt::Wednesday, Qt::Thursday,
       Qt::Friday, Qt::Saturday, Qt::Sunday};
 
-  // Fonts
+  // Fonts, including weekday fonts
   widget.setHeaderTextFormat(
       UpdateFormat(widget.headerTextFormat(), header_font));
   for (const auto& day : kWeekdays) {
     widget.setWeekdayTextFormat(
-        day, UpdateFormat(widget.weekdayTextFormat(day), calendar_font));
+        day, UpdateFormat(widget.weekdayTextFormat(day),
+                          weekday_font.days.count(day) > 0 ? weekday_font.font
+                                                           : calendar_font));
   }
 
   // HorizontalHeader

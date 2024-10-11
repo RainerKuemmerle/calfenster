@@ -105,6 +105,30 @@ font_size=10
 * `font_size=<int>` defaults to Qt's default font size.
   The font size to use for display.
 
+### Weekday formatting
+
+Similarly, weekdays can be formatted. The default is to render Saturday and Sunday in red.
+
+```INI
+[Weekdays]
+bg=
+days=6, 7
+fg=#ff0000
+font_family=
+font_size=
+```
+
+* `days=<ints>` default to `6, 7`.
+  A comma separated lists of integers to specify which weekday shall be formatted. Monday = 1, ... , Sunday = 7.
+* `bg=<color>` defaults to `""`.
+  Background color as hexadecimal RGB #RRGGBB.
+* `fg=<color>` defaults to `#ff0000`.
+  Foreground color as hexadecimal RGB #RRGGBB.
+* `font_family=<str>` defaults to Qt's default font family.
+  The font family to use for display.
+* `font_size=<int>` defaults to Qt's default font size.
+  The font size to use for display.
+
 ### Clocks
 
 Optionally, a list of dates/times can be displayed if specified in the configuration file. The clocks will be updated with ~1Hz. For example, we can display the local time of New York as well as Berlin as follows:
