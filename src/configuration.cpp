@@ -4,6 +4,7 @@
 #include <qbrush.h>
 #include <qcalendarwidget.h>
 #include <qcolor.h>
+#include <qdatetime.h>
 #include <qdebug.h>
 #include <qfont.h>
 #include <qglobal.h>
@@ -273,6 +274,13 @@ void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
                           weekday_font.days.count(day) > 0 ? weekday_font.font
                                                            : calendar_font));
   }
+
+  // Today in bold
+  const QDate today = QDate::currentDate();
+  const auto weekday = static_cast<Qt::DayOfWeek>(today.dayOfWeek());
+  QTextCharFormat today_format = widget.weekdayTextFormat(weekday);
+  today_format.setFontWeight(QFont::Bold);
+  widget.setDateTextFormat(today, today_format);
 
   // HorizontalHeader
   widget.setHorizontalHeaderFormat(ToHorizontalHeaderFormat(horizontal_header));
