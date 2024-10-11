@@ -2,7 +2,9 @@
 
 #include <qstring.h>
 
+#include <set>
 #include <utility>
+#include <vector>
 
 class QWidget;
 class QCalendarWidget;
@@ -35,6 +37,12 @@ struct Configuration {
     QString bg = "";
   };
 
+  struct WeekdayConfig {
+    WeekdayConfig();
+    FontConfig font;
+    std::set<int> days;
+  };
+
   Configuration();
   ~Configuration();
 
@@ -50,6 +58,7 @@ struct Configuration {
   FontConfig calendar_font;
   FontConfig header_font;
   FontConfig clock_font;
+  WeekdayConfig weekday_font;
 
   // Window position
   QString window_position = "mouse";  ///< either mouse or none
