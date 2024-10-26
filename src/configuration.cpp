@@ -14,6 +14,7 @@
 #include <qtextformat.h>
 #include <qwidget.h>
 
+#include <array>
 #include <cstddef>
 #include <regex>
 #include <set>
@@ -24,6 +25,10 @@
 namespace {
 const QString kSettingsOrg = "calfenster";
 const QString kSettingsApp = "calfenster";
+
+constexpr std::array<Qt::DayOfWeek, 7> kWeekdays = {
+    Qt::Monday, Qt::Tuesday,  Qt::Wednesday, Qt::Thursday,
+    Qt::Friday, Qt::Saturday, Qt::Sunday};
 }  // namespace
 
 namespace calfenster {
@@ -70,16 +75,15 @@ std::set<int> ToIntSet(const QStringList& list) {
   return result;
 }
 
-QFont CreateFont(const calfenster::Configuration::FontConfig& config) {
+QFont CreateFont(const Configuration::FontConfig& config) {
   const QFont font(
       !config.family.isEmpty() ? config.family : DefaultFont().family(),
       config.size > 0 ? config.size : DefaultFont().pointSize());
   return font;
 };
 
-QTextCharFormat UpdateFormat(
-    const QTextCharFormat& format,
-    const calfenster::Configuration::FontConfig& config) {
+QTextCharFormat UpdateFormat(const QTextCharFormat& format,
+                             const Configuration::FontConfig& config) {
   QTextCharFormat result = format;
   result.setFont(CreateFont(config));
   if (!config.fg.isEmpty()) {
@@ -94,8 +98,8 @@ QTextCharFormat UpdateFormat(
 }
 
 QCalendarWidget::HorizontalHeaderFormat ToHorizontalHeaderFormat(
-    QString header) {
-  header = header.toLower().trimmed();
+    const QString& s) {
+  const QString header = s.toLower().trimmed();
   if (header == "single") return QCalendarWidget::SingleLetterDayNames;
   if (header == "short") return QCalendarWidget::ShortDayNames;
   if (header == "long") return QCalendarWidget::LongDayNames;
@@ -260,10 +264,6 @@ void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
   widget.setWeekdayTextFormat(Qt::Saturday,
                               widget.weekdayTextFormat(Qt::Monday));
   widget.setWeekdayTextFormat(Qt::Sunday, widget.weekdayTextFormat(Qt::Monday));
-
-  static const std::vector<Qt::DayOfWeek> kWeekdays = {
-      Qt::Monday, Qt::Tuesday,  Qt::Wednesday, Qt::Thursday,
-      Qt::Friday, Qt::Saturday, Qt::Sunday};
 
   // Fonts, including weekday fonts
   widget.setHeaderTextFormat(
