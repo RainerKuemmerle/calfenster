@@ -35,9 +35,13 @@ def split_version(v: str) -> typing.Tuple[int, int, int]:
 def update_semantic_version(
     version: typing.Tuple[int, int, int], release: str
 ) -> typing.Tuple[int, int, int]:
-    semantic_inc = {"major": 0, "minor": 0, "patch": 0}
-    semantic_inc[release] = 1
-    return tuple(v + inc for v, inc in zip(version, semantic_inc.values()))
+    if release == "major":
+        return (version[0] + 1, 0, 0)
+    elif release == "minor":
+        return (version[0], version[1] + 1, 0)
+    elif release == "patch":
+        return (version[0], version[1], version[2] + 1)
+    raise ValueError(f"Unexpected release {release}")
 
 
 def main():
