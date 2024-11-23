@@ -158,6 +158,10 @@ Configuration::Configuration() {
   read_font_config(clock_font);
   settings.endGroup();
 
+  // weekday by default uses calender family and size
+  weekday_font.font.family = calendar_font.family;
+  weekday_font.font.size = calendar_font.size;
+
   // Weekday Fonts
   settings.beginGroup("Weekdays");
   weekday_font.days = ToIntSet(
