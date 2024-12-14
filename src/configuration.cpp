@@ -293,6 +293,9 @@ void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
   widget.setVerticalHeaderFormat(show_iso_week
                                      ? QCalendarWidget::ISOWeekNumbers
                                      : QCalendarWidget::NoVerticalHeader);
+
+  // Default font of the widget
+  widget.setFont(CreateFont(calendar_font));
 }
 
 void Configuration::ConfigureClockNanny(ClockNanny& nanny) const {
