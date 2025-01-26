@@ -7,17 +7,23 @@
 #include <qobject.h>
 #include <qregion.h>
 
+#include <limits>
 #include <optional>
 
 #include "calfenster/moc_app_server.cpp"  // NOLINT
 
+namespace {
+constexpr int kTimeoutMs = 1000;
+}
+
 namespace calfenster {
 
-static_assert(static_cast<int>(AppServer::Command::kCommandSize) < 255,
+static_assert(static_cast<int>(AppServer::Command::kCommandSize) <
+                  std::numeric_limits<unsigned char>::max(),
               "Command has to fit into a byte");
 
-AppServer::AppServer(QObject* parent) : QObject(parent) {
-  server_ = new QLocalServer(this);
+AppServer::AppServer(QObject* parent)
+    : QObject(parent), server_(new QLocalServer(this)) {
   if (!server_->listen("calfenster.lock")) {
     server_->close();
     other_instance_ = true;
@@ -35,13 +41,14 @@ void AppServer::SlotNewConnection() {
 }
 
 void AppServer::SlotReadClient() {
-  auto* local_socket = static_cast<QLocalSocket*>(sender());
+  auto* local_socket = dynamic_cast<QLocalSocket*>(sender());
   QDataStream in(local_socket);
   in.setVersion(QDataStream::Qt_5_3);
-  quint8 command_from_client;
+  quint8 command_from_client = 0;
   for (;;) {
-    if (local_socket->bytesAvailable() < static_cast<int>(sizeof(quint8)))
+    if (local_socket->bytesAvailable() < static_cast<int>(sizeof(quint8))) {
       break;
+    }
     in >> command_from_client;
     auto command = static_cast<Command>(command_from_client);
     switch (command) {
@@ -63,7 +70,7 @@ void AppServer::SlotReadClient() {
 bool AppServer::SendCommand(Command cmd) {
   QLocalSocket socket(this);
   socket.connectToServer("calfenster.lock");
-  if (!socket.waitForConnected(1000)) {
+  if (!socket.waitForConnected(kTimeoutMs)) {
     return false;
   }
   QByteArray array_block;
@@ -71,13 +78,17 @@ bool AppServer::SendCommand(Command cmd) {
   out.setVersion(QDataStream::Qt_5_3);
   out << static_cast<quint8>(cmd);
   socket.write(array_block);
-  return socket.waitForBytesWritten(1000);
+  return socket.waitForBytesWritten(kTimeoutMs);
 }
 
 std::optional<AppServer::Command> AppServer::CommandFromString(
     const QString& command) {
-  if (command == "prev") return Command::kPrevMonth;
-  if (command == "next") return Command::kNextMonth;
+  if (command == "prev") {
+    return Command::kPrevMonth;
+  }
+  if (command == "next") {
+    return Command::kNextMonth;
+  }
   return std::nullopt;
 }
 

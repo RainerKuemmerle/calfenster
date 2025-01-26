@@ -18,12 +18,12 @@ EventFilter::EventFilter(QObject* parent) : QObject(parent) {}
 
 bool EventFilter::eventFilter(QObject* obj, QEvent* event) {
   if (event->type() == QEvent::Close) {
-    auto* close_event = static_cast<QCloseEvent*>(event);
+    auto* close_event = dynamic_cast<QCloseEvent*>(event);
     close_event->accept();
     return true;
   }
   if (event->type() == QEvent::KeyPress) {
-    auto* key_event = static_cast<QKeyEvent*>(event);
+    auto* key_event = dynamic_cast<QKeyEvent*>(event);
     if (key_event->key() == Qt::Key_Escape ||
         (key_event->modifiers() == Qt::ControlModifier &&
          key_event->key() == Qt::Key_Q)) {

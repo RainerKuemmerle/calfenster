@@ -14,12 +14,15 @@
 
 #include "calfenster/moc_clock_nanny.cpp"  // NOLINT
 
+namespace {
+constexpr int kClockTickMs = 1000;
+}
+
 namespace calfenster {
 ClockNanny::ClockNanny(QObject* parent, QVBoxLayout* layout)
-    : QObject(parent), parent_layout_(layout) {
-  timer_ = new QTimer(this);
+    : QObject(parent), parent_layout_(layout), timer_(new QTimer(this)) {
   connect(timer_, &QTimer::timeout, this, QOverload<>::of(&ClockNanny::Tick));
-  timer_->start(1000);
+  timer_->start(kClockTickMs);
 }
 
 void ClockNanny::AddClock(const QString& label, const QTimeZone& timezone,
@@ -28,7 +31,7 @@ void ClockNanny::AddClock(const QString& label, const QTimeZone& timezone,
   parent_layout_->addWidget(holder_widget);
 
   auto* layout = new QHBoxLayout(holder_widget);
-  layout->setContentsMargins(5, 2, 5, 2);
+  layout->setContentsMargins(5, 2, 5, 2);  // NOLINT
 
   Clock& clock = clocks_.emplace_back(timezone, format);
   clock.time_label = new QLabel(holder_widget);

@@ -7,6 +7,7 @@
 #include <qobjectdefs.h>
 #include <qtimezone.h>
 
+#include <utility>
 #include <vector>
 
 namespace calfenster {
@@ -15,8 +16,8 @@ class ClockNanny : public QObject {
 
  public:
   struct Clock {
-    Clock(const QTimeZone& timezone, QString format)
-        : timezone(timezone), format(std::move(format)) {}
+    Clock(QTimeZone timezone, QString format)
+        : timezone(std::move(timezone)), format(std::move(format)) {}
     QTimeZone timezone;
     QString format;
     QLabel* clock_label = nullptr;
