@@ -13,8 +13,9 @@
 #include "calfenster/moc_app_server.cpp"  // NOLINT
 
 namespace {
+const QString kServerLock = "calfenster.lock";
 constexpr int kTimeoutMs = 1000;
-}
+}  // namespace
 
 namespace calfenster {
 
@@ -24,7 +25,7 @@ static_assert(static_cast<int>(AppServer::Command::kCommandSize) <
 
 AppServer::AppServer(QObject* parent)
     : QObject(parent), server_(new QLocalServer(this)) {
-  if (!server_->listen("calfenster.lock")) {
+  if (!server_->listen(kServerLock)) {
     server_->close();
     other_instance_ = true;
     return;
@@ -69,7 +70,7 @@ void AppServer::SlotReadClient() {
 
 bool AppServer::SendCommand(Command cmd) {
   QLocalSocket socket(this);
-  socket.connectToServer("calfenster.lock");
+  socket.connectToServer(kServerLock);
   if (!socket.waitForConnected(kTimeoutMs)) {
     return false;
   }

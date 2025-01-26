@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
   }
 
   QWidget main_widget;
-  auto* calendar_widget = new QCalendarWidget();
+  auto* calendar_widget = new QCalendarWidget(&main_widget);
   auto* stack_layout = new QVBoxLayout(&main_widget);
   stack_layout->setSpacing(0);
   stack_layout->setContentsMargins(0, 0, 0, 0);
