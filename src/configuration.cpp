@@ -51,10 +51,12 @@ const QFont& DefaultFont() {
 QColor ToColor(const std::string& color_str) {
   const std::regex pattern("#([0-9a-fA-F]{6})");
   std::smatch match;
-  if (!std::regex_match(color_str, match, pattern)) return QColor();
-  unsigned int r, g, b;  // NOLINT
-  sscanf(match.str(1).c_str(), "%2x%2x%2x", &r, &g, &b);
-  return QColor(r, g, b);
+  if (!std::regex_match(color_str, match, pattern)) {
+    return {};
+  }
+  unsigned int r, g, b;                                   // NOLINT
+  sscanf(match.str(1).c_str(), "%2x%2x%2x", &r, &g, &b);  // NOLINT
+  return {static_cast<int>(r), static_cast<int>(g), static_cast<int>(b)};
 }
 
 QStringList ToStringList(const std::set<int>& ints) {
@@ -70,7 +72,9 @@ std::set<int> ToIntSet(const QStringList& list) {
   for (const auto& s : list) {
     bool ok = true;
     int i = s.toInt(&ok);
-    if (ok) result.insert(i);
+    if (ok) {
+      result.insert(i);
+    }
   }
   return result;
 }
@@ -88,11 +92,15 @@ QTextCharFormat UpdateFormat(const QTextCharFormat& format,
   result.setFont(CreateFont(config));
   if (!config.fg.isEmpty()) {
     QColor color = ToColor(config.fg.toStdString());
-    if (color.isValid()) result.setForeground(QBrush(color));
+    if (color.isValid()) {
+      result.setForeground(QBrush(color));
+    }
   }
   if (!config.bg.isEmpty()) {
     QColor color = ToColor(config.bg.toStdString());
-    if (color.isValid()) result.setBackground(QBrush(color));
+    if (color.isValid()) {
+      result.setBackground(QBrush(color));
+    }
   }
   return result;
 }
@@ -100,9 +108,15 @@ QTextCharFormat UpdateFormat(const QTextCharFormat& format,
 QCalendarWidget::HorizontalHeaderFormat ToHorizontalHeaderFormat(
     const QString& s) {
   const QString header = s.toLower().trimmed();
-  if (header == "single") return QCalendarWidget::SingleLetterDayNames;
-  if (header == "short") return QCalendarWidget::ShortDayNames;
-  if (header == "long") return QCalendarWidget::LongDayNames;
+  if (header == "single") {
+    return QCalendarWidget::SingleLetterDayNames;
+  }
+  if (header == "short") {
+    return QCalendarWidget::ShortDayNames;
+  }
+  if (header == "long") {
+    return QCalendarWidget::LongDayNames;
+  }
   return QCalendarWidget::NoHorizontalHeader;
 }
 
@@ -183,7 +197,9 @@ Configuration::Configuration() {
 }
 
 Configuration::~Configuration() {
-  if (!save_on_exit) return;
+  if (!save_on_exit) {
+    return;
+  }
   // Create a configuration with default values
   QSettings settings(kSettingsOrg, kSettingsApp);
 
@@ -201,7 +217,9 @@ Configuration::~Configuration() {
   settings.setValue("show_iso_week", show_iso_week);
   settings.setValue("horizontal_header", horizontal_header);
 
-  if (!locale.isEmpty()) settings.setValue("locale", locale);
+  if (!locale.isEmpty()) {
+    settings.setValue("locale", locale);
+  }
 
   auto write_font_config = [&settings](const FontConfig& config) {
     if (config.size > 0) {
@@ -234,7 +252,7 @@ Configuration::~Configuration() {
     settings.endGroup();
     settings.beginWriteArray("Clocks");
     for (std::size_t i = 0; i < clocks.size(); ++i) {
-      settings.setArrayIndex(i);
+      settings.setArrayIndex(static_cast<int>(i));
       settings.setValue("label", clocks[i].label);
       settings.setValue("timezone", clocks[i].timezone);
       settings.setValue("format", clocks[i].format);
@@ -245,12 +263,24 @@ Configuration::~Configuration() {
 
 void Configuration::ConfigureWindow(QWidget& widget) const {
   Qt::WindowFlags flags;
-  if (skip_task_bar) flags |= Qt::SplashScreen;
-  if (frameless_window) flags |= Qt::FramelessWindowHint;
-  if (window_no_shadow) flags |= Qt::NoDropShadowWindowHint;
-  if (window_stays_on_top) flags |= Qt::WindowStaysOnTopHint;
-  if (window_stays_on_bottom) flags |= Qt::WindowStaysOnBottomHint;
-  if (customize_window) flags |= Qt::CustomizeWindowHint;
+  if (skip_task_bar) {
+    flags |= Qt::SplashScreen;
+  }
+  if (frameless_window) {
+    flags |= Qt::FramelessWindowHint;
+  }
+  if (window_no_shadow) {
+    flags |= Qt::NoDropShadowWindowHint;
+  }
+  if (window_stays_on_top) {
+    flags |= Qt::WindowStaysOnTopHint;
+  }
+  if (window_stays_on_bottom) {
+    flags |= Qt::WindowStaysOnBottomHint;
+  }
+  if (customize_window) {
+    flags |= Qt::CustomizeWindowHint;
+  }
 
   widget.setWindowFlags(flags);
 
@@ -299,7 +329,9 @@ void Configuration::ConfigureCalendar(QCalendarWidget& widget) const {
 }
 
 void Configuration::ConfigureClockNanny(ClockNanny& nanny) const {
-  if (nanny.Clocks().empty()) return;
+  if (nanny.Clocks().empty()) {
+    return;
+  }
   const QFont font = CreateFont(clock_font);
   for (auto& clock : nanny.Clocks()) {
     clock.clock_label->setFont(font);

@@ -117,7 +117,9 @@ int main(int argc, char* argv[]) {
 
   config.ConfigureWindow(main_widget);
   config.ConfigureCalendar(*calendar_widget);
-  if (clock_nanny) config.ConfigureClockNanny(*clock_nanny);
+  if (clock_nanny) {
+    config.ConfigureClockNanny(*clock_nanny);
+  }
 
   main_widget.show();
   return QApplication::exec();
