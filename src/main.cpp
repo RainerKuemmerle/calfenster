@@ -7,6 +7,7 @@
 #include <qglobal.h>
 #include <qlocale.h>
 #include <qobject.h>
+#include <qsettings.h>
 #include <qtimezone.h>
 #include <qwidget.h>
 
@@ -69,6 +70,7 @@ int main(int argc, char* argv[]) {
     return request_status ? EXIT_SUCCESS : EXIT_FAILURE;
   }
 
+  QSettings::setDefaultFormat(QSettings::IniFormat);
   calfenster::Configuration config;
   if (!config.locale.isEmpty()) {
     QLocale locale_override(config.locale);
