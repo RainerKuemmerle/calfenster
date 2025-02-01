@@ -33,7 +33,7 @@ Arguments:
 
 ## Configuration
 
-calfenster can be configured using a configuration file. The file is located in `~/.config/calfenster/calfenster.conf`. If not found, fallback to `/etc/xdg/` instead of `$HOME`. See [QSettings](https://doc.qt.io/qt-6/qsettings.html#locations-where-application-settings-are-stored) for further and platform specific details. If none found a default configuration will be stored.
+calfenster can be configured using a configuration file. The file is located in `~/.config/calfenster/calfenster.conf`. If not found, fallback to `/etc/xdg/` instead of `$HOME`. See [QSettings](https://doc.qt.io/qt-6/qsettings.html#locations-where-application-settings-are-stored) for further and platform specific details. If none found a default configuration will be stored in INI file format.
 
 ### Example
 
