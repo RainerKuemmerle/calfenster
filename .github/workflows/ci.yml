@@ -24,10 +24,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install eatmydata
+      shell: bash
+      run: |
+        type eatmydata || sudo sh -c 'apt-get install -y eatmydata || apt-get update && apt-get install -y eatmydata'
+
     - name: Install dependencies
       run: |
-          sudo apt update
-          sudo apt install ${{matrix.qt.packages}}
+          sudo eatmydata apt install ${{matrix.qt.packages}}
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCALFENSTER_QTVERSION=${{matrix.qt.version}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
