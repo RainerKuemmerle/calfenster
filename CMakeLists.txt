@@ -13,6 +13,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CALFENSTER_QTVERSION "6" CACHE STRING "Which Qt version to use. 6|5")
 find_package(Qt${CALFENSTER_QTVERSION} COMPONENTS Core Widgets Network REQUIRED)
 
+if (${CALFENSTER_QTVERSION} STREQUAL "6")
+  find_package(LayerShellQt)
+endif()
+if (TARGET LayerShellQt::Interface)
+  set(HAVE_LAYER_SHELL TRUE)
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
 ${CMAKE_CURRENT_SOURCE_DIR}/include/calfenster/config.h)
 
@@ -27,6 +34,9 @@ target_compile_options(calfenster PRIVATE -Wall -Wextra -pedantic)
 target_include_directories(calfenster PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(calfenster PRIVATE Qt${CALFENSTER_QTVERSION}::Core
   Qt${CALFENSTER_QTVERSION}::Widgets Qt${CALFENSTER_QTVERSION}::Network)
+if (TARGET LayerShellQt::Interface)
+  target_link_libraries(calfenster PRIVATE LayerShellQtInterface)
+endif()
 
 include(GNUInstallDirs)
 install(TARGETS calfenster

@@ -2,6 +2,7 @@
 
 #include <qstring.h>
 
+#include <array>
 #include <set>
 #include <utility>
 #include <vector>
@@ -43,16 +44,29 @@ struct Configuration {
     std::set<int> days;
   };
 
+  struct X11WindowOptions {
+    bool skip_task_bar = true;
+    bool frameless_window = true;
+    bool window_no_shadow = false;
+    bool window_stays_on_top = true;
+    bool window_stays_on_bottom = false;
+    bool customize_window = true;
+    // Window position
+    QString window_position = "mouse";  ///< either mouse or none
+  };
+
+  struct WaylandWindowOptions {
+    QString anchors = "AnchorBottom|AnchorRight";
+    QString layer = "LayerTop";
+    std::array<int, 4> margins = {0, 0, 0, 0};
+  };
+
   Configuration();
   ~Configuration();
 
   // Window display options
-  bool skip_task_bar = true;
-  bool frameless_window = true;
-  bool window_no_shadow = false;
-  bool window_stays_on_top = true;
-  bool window_stays_on_bottom = false;
-  bool customize_window = true;
+  X11WindowOptions x11_options;
+  WaylandWindowOptions wayland_options;
 
   // font
   FontConfig calendar_font;
@@ -60,9 +74,7 @@ struct Configuration {
   FontConfig clock_font;
   WeekdayConfig weekday_font;
 
-  // Window position
-  QString window_position = "mouse";  ///< either mouse or none
-  QString locale = "";                ///< Common Locale Data Repository v45
+  QString locale = "";  ///< Common Locale Data Repository v45
 
   // Calender display options
   bool show_grid = true;
