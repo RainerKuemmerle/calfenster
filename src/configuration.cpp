@@ -389,6 +389,8 @@ void Configuration::ConfigureWindow(QWidget& widget) const {
     layer_shell->setMargins(
         QMargins(wayland_options.margins[0], wayland_options.margins[1],
                  wayland_options.margins[2], wayland_options.margins[3]));
+    layer_shell->setScreenConfiguration(
+        LayerShellQt::Window::ScreenFromCompositor);
 #else
     qInfo() << "No Layer Shell support compiled in.";
 #endif
