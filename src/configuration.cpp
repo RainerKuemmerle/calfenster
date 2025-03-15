@@ -9,11 +9,17 @@
 #include <qfont.h>
 #include <qglobal.h>
 #include <qlist.h>
+#include <qlogging.h>
+#include <qmargins.h>
 #include <qnamespace.h>
+#include <qobjectdefs.h>
 #include <qsettings.h>
 #include <qtextformat.h>
 #include <qwidget.h>
+#include <qwindow.h>
+#include <qwindowdefs.h>
 
+#include <QMetaEnum>
 #include <array>
 #include <cstddef>
 #include <regex>
@@ -21,6 +27,11 @@
 #include <vector>
 
 #include "calfenster/clock_nanny.h"
+#include "calfenster/config.h"
+
+#ifdef HAVE_LAYER_SHELL
+#include <LayerShellQt/window.h>
+#endif
 
 namespace {
 const QString kSettingsOrg = "calfenster";
@@ -67,6 +78,14 @@ QStringList ToStringList(const std::set<int>& ints) {
   return result;
 }
 
+QStringList ToStringList(const std::array<int, 4>& ints) {
+  QStringList result;
+  for (auto i : ints) {
+    result.append(QString::number(i));
+  }
+  return result;
+}
+
 std::set<int> ToIntSet(const QStringList& list) {
   std::set<int> result;
   for (const auto& s : list) {
@@ -74,6 +93,20 @@ std::set<int> ToIntSet(const QStringList& list) {
     int i = s.toInt(&ok);
     if (ok) {
       result.insert(i);
+    }
+  }
+  return result;
+}
+
+template <int N>
+std::array<int, N> ToIntArray(const QStringList& list) {
+  std::array<int, N> result{};
+  int max_idx = std::min(static_cast<int>(list.size()), N);
+  for (int i = 0; i < max_idx; ++i) {
+    bool ok = true;
+    int number = list[i].toInt(&ok);
+    if (ok) {
+      result[i] = number;  // NOLINT
     }
   }
   return result;
@@ -120,6 +153,33 @@ QCalendarWidget::HorizontalHeaderFormat ToHorizontalHeaderFormat(
   return QCalendarWidget::NoHorizontalHeader;
 }
 
+#ifdef HAVE_LAYER_SHELL
+template <typename T>
+T StringToEnum(QMetaEnum meta_enum, const QString& value) {
+  bool ok = true;
+  T result = T(meta_enum.keyToValue(qPrintable(value), &ok));
+  if (!ok) {
+    qWarning() << "Unknown enum value " << value;
+    return T{};
+  }
+  return result;
+}
+
+template <typename T>
+T FlaggedStringToEnum(QMetaEnum meta_enum, const QString& str) {
+  T ret = {};
+  const auto splitted = str.split(QLatin1Char('|'), Qt::SkipEmptyParts);
+  for (const auto& value : splitted) {
+    ret |= StringToEnum<T>(meta_enum, value);
+  }
+  return ret;
+}
+
+const auto kAnchorMetaEnum =
+    QMetaEnum::fromType<LayerShellQt::Window::Anchor>();
+const auto kLayerMetaEnum = QMetaEnum::fromType<LayerShellQt::Window::Layer>();
+#endif
+
 }  // namespace
 
 Configuration::WeekdayConfig::WeekdayConfig() {
@@ -131,21 +191,6 @@ Configuration::Configuration() {
   QSettings settings(kSettingsOrg, kSettingsApp);
   save_on_exit = settings.allKeys().isEmpty();
 
-  // Window settings
-  skip_task_bar = settings.value("skip_task_bar", skip_task_bar).toBool();
-  frameless_window =
-      settings.value("frameless_window", frameless_window).toBool();
-  window_no_shadow =
-      settings.value("window_no_shadow", window_no_shadow).toBool();
-  window_stays_on_top =
-      settings.value("window_stays_on_top", window_stays_on_top).toBool();
-  window_stays_on_bottom =
-      settings.value("window_stays_on_bottom", window_stays_on_bottom).toBool();
-  customize_window =
-      settings.value("customize_window", customize_window).toBool();
-  window_position =
-      settings.value("window_position", window_position).toString();
-
   // Calendar display
   show_grid = settings.value("show_grid", show_grid).toBool();
   show_iso_week = settings.value("show_iso_week", show_iso_week).toBool();
@@ -153,6 +198,37 @@ Configuration::Configuration() {
       settings.value("horizontal_header", horizontal_header).toString();
 
   locale = settings.value("locale", locale).toString();
+
+  // Window settings
+  settings.beginGroup("X11");
+  x11_options.skip_task_bar =
+      settings.value("skip_task_bar", x11_options.skip_task_bar).toBool();
+  x11_options.frameless_window =
+      settings.value("frameless_window", x11_options.frameless_window).toBool();
+  x11_options.window_no_shadow =
+      settings.value("window_no_shadow", x11_options.window_no_shadow).toBool();
+  x11_options.window_stays_on_top =
+      settings.value("window_stays_on_top", x11_options.window_stays_on_top)
+          .toBool();
+  x11_options.window_stays_on_bottom =
+      settings
+          .value("window_stays_on_bottom", x11_options.window_stays_on_bottom)
+          .toBool();
+  x11_options.customize_window =
+      settings.value("customize_window", x11_options.customize_window).toBool();
+  x11_options.window_position =
+      settings.value("window_position", x11_options.window_position).toString();
+  settings.endGroup();
+
+  settings.beginGroup("Wayland");
+  wayland_options.anchors =
+      settings.value("anchors", wayland_options.anchors).toString();
+  wayland_options.layer =
+      settings.value("layer", wayland_options.layer).toString();
+  wayland_options.margins = ToIntArray<4>(
+      settings.value("margins", ToStringList(wayland_options.margins))
+          .toStringList());
+  settings.endGroup();
 
   auto read_font_config = [&settings](FontConfig& config) {
     config.size = settings.value("font_size", config.size).toInt();
@@ -203,15 +279,6 @@ Configuration::~Configuration() {
   // Create a configuration with default values
   QSettings settings(kSettingsOrg, kSettingsApp);
 
-  // Window settings
-  settings.setValue("skip_task_bar", skip_task_bar);
-  settings.setValue("frameless_window", frameless_window);
-  settings.setValue("window_no_shadow", window_no_shadow);
-  settings.setValue("window_stays_on_top", window_stays_on_top);
-  settings.setValue("window_stays_on_bottom", window_stays_on_bottom);
-  settings.setValue("customize_window", customize_window);
-  settings.setValue("window_position", window_position);
-
   // Calendar display
   settings.setValue("show_grid", show_grid);
   settings.setValue("show_iso_week", show_iso_week);
@@ -220,6 +287,24 @@ Configuration::~Configuration() {
   if (!locale.isEmpty()) {
     settings.setValue("locale", locale);
   }
+
+  // Window settings
+  settings.beginGroup("X11");
+  settings.setValue("customize_window", x11_options.customize_window);
+  settings.setValue("frameless_window", x11_options.frameless_window);
+  settings.setValue("skip_task_bar", x11_options.skip_task_bar);
+  settings.setValue("window_no_shadow", x11_options.window_no_shadow);
+  settings.setValue("window_stays_on_top", x11_options.window_stays_on_top);
+  settings.setValue("window_stays_on_bottom",
+                    x11_options.window_stays_on_bottom);
+  settings.setValue("window_position", x11_options.window_position);
+  settings.endGroup();
+
+  settings.beginGroup("Wayland");
+  settings.setValue("anchors", wayland_options.anchors);
+  settings.setValue("layer", wayland_options.layer);
+  settings.setValue("margins", ToStringList(wayland_options.margins));
+  settings.endGroup();
 
   auto write_font_config = [&settings](const FontConfig& config) {
     if (config.size > 0) {
@@ -263,31 +348,50 @@ Configuration::~Configuration() {
 
 void Configuration::ConfigureWindow(QWidget& widget) const {
   Qt::WindowFlags flags;
-  if (skip_task_bar) {
+  if (x11_options.skip_task_bar) {
     flags |= Qt::SplashScreen;
   }
-  if (frameless_window) {
+  if (x11_options.frameless_window) {
     flags |= Qt::FramelessWindowHint;
   }
-  if (window_no_shadow) {
+  if (x11_options.window_no_shadow) {
     flags |= Qt::NoDropShadowWindowHint;
   }
-  if (window_stays_on_top) {
+  if (x11_options.window_stays_on_top) {
     flags |= Qt::WindowStaysOnTopHint;
   }
-  if (window_stays_on_bottom) {
+  if (x11_options.window_stays_on_bottom) {
     flags |= Qt::WindowStaysOnBottomHint;
   }
-  if (customize_window) {
+  if (x11_options.customize_window) {
     flags |= Qt::CustomizeWindowHint;
   }
 
   widget.setWindowFlags(flags);
 
-  if (window_position.toLower().trimmed() == "mouse") {
+  if (x11_options.window_position.toLower().trimmed() == "mouse") {
     QPoint cursor_pos = QCursor::pos();
     cursor_pos.setY(cursor_pos.y() - widget.sizeHint().height());
     widget.move(cursor_pos);
+  }
+
+  if (QGuiApplication::platformName() == "wayland") {
+#ifdef HAVE_LAYER_SHELL
+    widget.createWinId();
+    QWindow* window = widget.windowHandle();
+    LayerShellQt::Window* layer_shell = LayerShellQt::Window::get(window);
+    const auto layer = StringToEnum<LayerShellQt::Window::Layer>(
+        kLayerMetaEnum, wayland_options.layer);
+    const auto anchors = FlaggedStringToEnum<LayerShellQt::Window::Anchors>(
+        kAnchorMetaEnum, wayland_options.anchors);
+    layer_shell->setAnchors(anchors);
+    layer_shell->setLayer(layer);
+    layer_shell->setMargins(
+        QMargins(wayland_options.margins[0], wayland_options.margins[1],
+                 wayland_options.margins[2], wayland_options.margins[3]));
+#else
+    qInfo() << "No Layer Shell support compiled in.";
+#endif
   }
 }
 

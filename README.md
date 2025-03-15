@@ -23,7 +23,7 @@ Options:
   -v, --version  Displays version information.
   -h, --help     Displays help on commandline options.
   --help-all     Displays help including Qt specific options.
-  --timezones    Print a list of time zones and exit.
+  --timezones    Prints a list of time zones and exit.
 
 Arguments:
   command        prev | next: Show previous or next month.
@@ -41,24 +41,29 @@ Below an example configuration file featuring the default settings.
 
 ```INI
 [General]
-customize_window=true
-frameless_window=true
 horizontal_header=short
 show_grid=true
 show_iso_week=true
+
+[X11]
+customize_window=true
+frameless_window=true
 skip_task_bar=true
 window_no_shadow=false
 window_position=mouse
 window_stays_on_bottom=false
 window_stays_on_top=true
+
+[Wayland]
+anchors=AnchorBottom|AnchorRight
+layer=LayerTop
+margins=0, 0, 0, 0
 ```
 
-### Options
+### General Options
 
-* `customize_window=<boolean>` defaults to `true`.
-  Controls whether the window has the default window title hints.
-* `frameless_window=<boolean>` defaults to `true`.
-  If activated produces a frameless window.
+The general options for display of the app.
+
 * `horizontal_header=<str>` defaults to `short`.
   Specifies how to display the horizontal weekday header. The following styles are supported: `[short, single, long, none]`.
 * `locale=<str>` defaults to `""`, i.e., the system's default locale.
@@ -67,6 +72,15 @@ window_stays_on_top=true
   Renders the calendar with a grid in between cells.
 * `show_iso_week=<boolean>` defaults to `true`.
   Display the ISO week number as vertical header.
+
+### X11 Options
+
+For X11 based window managers, we can modify the window by the following configuration.
+
+* `customize_window=<boolean>` defaults to `true`.
+  Controls whether the window has the default window title hints.
+* `frameless_window=<boolean>` defaults to `true`.
+  If activated produces a frameless window.
 * `skip_task_bar=<boolean>` defaults to `true`.
   Asks the window manager to skip showing the window in the taskbar.
 * `window_no_shadow=<boolean>` defaults to `false`.
@@ -77,6 +91,20 @@ window_stays_on_top=true
   The window shall stay on bottom of all windows.
 * `window_stays_on_top=<boolean>` defaults to `true`.
   The window shall stay on top of all windows.
+
+### Wayland
+
+On wayland based window managers, we can modify the window by the following configuration.
+
+* `anchors=<string>` defaults to `AnchorBottom|AnchorRight`.
+  Specifies the anchor of the window according to the wlr-layer-shell.
+  Can be a combination of `AnchorTop | AnchorBottom | AnchorLeft | AnchorRight`
+* `layer=<string>` defaults to `LayerTop`.
+  Specifies the layer of the window according to the wlr-layer-shell.
+  The layer can be onw of: `[LayerBackground, LayerBottom, LayerTop, LayerOverlay]`.
+* `margins=<array:4>` default to `0, 0, 0, 0`.
+   Defines a set of four margins; left, top, right, and bottom, that describe
+   the size of the borders surrounding the window.
 
 ### Fonts
 
@@ -171,11 +199,12 @@ In the following `N` is an integer number with the range `[1, size]`.
 ## Compilation
 
 `calfenster` only depends on Qt either in version 5 or 6. In particular, we require the modules core, gui, and network.
+Furthermore, [layer-shell-qt](https://github.com/KDE/layer-shell-qt) can be used for better integration into wayland.
 
 On Debian/Ubuntu you can install the required Qt development files with
 ```
 # Qt6
-sudo apt install qt6-base-dev
+sudo apt install qt6-base-dev liblayershellqtinterface-dev
 # Qt5
 sudo apt install qtbase5-dev
 ```

@@ -14,27 +14,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        qt:
-          - version: 5
+        bt:
+          - name: "Qt5"
+            qt_version: 5
             packages: qtbase5-dev
-          - version: 6
+          - name: "Qt6 - Wayland"
+            qt_version: 6
+            packages: qt6-base-dev libglx-dev libgl1-mesa-dev liblayershellqtinterface-dev
+          - name: "Qt6 - only X11"
+            qt_version: 6
             packages: qt6-base-dev libglx-dev libgl1-mesa-dev
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install eatmydata
+    - name: Install eatmydata ${{matrix.bt.name}}
       shell: bash
       run: |
         type eatmydata || sudo sh -c 'apt-get install -y eatmydata || apt-get update && apt-get install -y eatmydata'
 
-    - name: Install dependencies
+    - name: Install dependencies ${{matrix.bt.name}}
       run: |
-          sudo eatmydata apt install ${{matrix.qt.packages}}
+          sudo eatmydata apt install ${{matrix.bt.packages}}
 
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCALFENSTER_QTVERSION=${{matrix.qt.version}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    - name: Configure CMake ${{matrix.bt.name}}
+      run: cmake -B ${{github.workspace}}/build -DCALFENSTER_QTVERSION=${{matrix.bt.qt_version}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Build
+    - name: Build ${{matrix.bt.name}}
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}

@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
   command_line.addHelpOption();
   // Add option to print available timezones
   QCommandLineOption list_timezone_option(
-      "timezones", "Print a list of time zones and exit.");
+      "timezones", "Prints a list of time zones and exit.");
   command_line.addOption(list_timezone_option);
   // actual parsing of the command line
   command_line.process(app);

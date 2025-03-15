@@ -8,6 +8,7 @@ Build-Depends:
  qt6-base-dev,
  libglx-dev,
  libgl1-mesa-dev,
+ liblayershellqtinterface-dev,
  cmake,
 Standards-Version: 4.6.2
 Homepage: https://github.com/RainerKuemmerle/calfenster

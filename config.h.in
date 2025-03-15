@@ -1,3 +1,5 @@
 #pragma once
 
 #cmakedefine CALFENSTER_VERSION "@CALFENSTER_VERSION@"
+
+#cmakedefine HAVE_LAYER_SHELL
