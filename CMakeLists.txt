@@ -14,7 +14,7 @@ set(CALFENSTER_QTVERSION "6" CACHE STRING "Which Qt version to use. 6|5")
 find_package(Qt${CALFENSTER_QTVERSION} COMPONENTS Core Widgets Network REQUIRED)
 
 if (${CALFENSTER_QTVERSION} STREQUAL "6")
-  find_package(LayerShellQt)
+  find_package(LayerShellQt 6.1.0)
 endif()
 if (TARGET LayerShellQt::Interface)
   set(HAVE_LAYER_SHELL TRUE)
