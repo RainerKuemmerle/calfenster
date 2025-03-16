@@ -21,7 +21,7 @@ if (TARGET LayerShellQt::Interface)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
-${CMAKE_CURRENT_SOURCE_DIR}/include/calfenster/config.h)
+${PROJECT_BINARY_DIR}/include/calfenster/config.h)
 
 add_executable(calfenster
 src/configuration.cpp
@@ -31,7 +31,9 @@ src/clock_nanny.cpp
 src/main.cpp)
 
 target_compile_options(calfenster PRIVATE -Wall -Wextra -pedantic)
-target_include_directories(calfenster PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(calfenster PRIVATE
+  ${PROJECT_BINARY_DIR}/include/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(calfenster PRIVATE Qt${CALFENSTER_QTVERSION}::Core
   Qt${CALFENSTER_QTVERSION}::Widgets Qt${CALFENSTER_QTVERSION}::Network)
 if (TARGET LayerShellQt::Interface)
