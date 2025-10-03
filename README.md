@@ -45,6 +45,9 @@ horizontal_header=short
 show_grid=true
 show_iso_week=true
 
+[Clipboard]
+format=dd.MM.yyyy
+
 [X11]
 customize_window=true
 frameless_window=true
@@ -72,6 +75,19 @@ The general options for display of the app.
   Renders the calendar with a grid in between cells.
 * `show_iso_week=<boolean>` defaults to `true`.
   Display the ISO week number as vertical header.
+
+## Clipboard Options
+
+Upon hitting Ctrl-C the currently selected date, defaulting to today, is copied into systems clipboard. The behavior can be modified by the following configuration.
+
+* `format=<str>` defaults to `dd.MM.yyyy`.
+  Controls the formatting of the date, see [QDate](https://doc.qt.io/qt-6/qdate.html#toString) for details.
+  Example format strings (assuming that the date is the 20 July 1969):
+  | Format            | Result            |
+  | ----------------- | -------------     |
+  | dd.MM.yyyy        |	20.07.1969        |
+  | ddd MMMM d yy     |	Sun July 20 69    |
+  | 'The day is' dddd |	The day is Sunday |
 
 ### X11 Options
 

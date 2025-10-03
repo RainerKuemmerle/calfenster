@@ -7,6 +7,7 @@
 #include <qglobal.h>
 #include <qlocale.h>
 #include <qobject.h>
+#include <qobjectdefs.h>
 #include <qsettings.h>
 #include <qtimezone.h>
 #include <qwidget.h>
@@ -16,6 +17,7 @@
 #include <optional>
 
 #include "calfenster/app_server.h"
+#include "calfenster/clipboard_nanny.h"
 #include "calfenster/clock_nanny.h"
 #include "calfenster/config.h"
 #include "calfenster/configuration.h"
@@ -96,6 +98,11 @@ int main(int argc, char* argv[]) {
   main_widget.installEventFilter(event_filter);
   calendar_widget->installEventFilter(event_filter);
 
+  // Connect signals for pasting to the clipboard
+  auto* clipboard_nanny = new calfenster::ClipboardNanny(&main_widget);
+  QObject::connect(event_filter, SIGNAL(CopyDate(const QDate&)),
+                   clipboard_nanny, SLOT(SetDateInClipboard(const QDate&)));
+
   // Add Clocks to widget
   calfenster::ClockNanny* clock_nanny = nullptr;
   if (!config.clocks.empty()) {
@@ -122,6 +129,7 @@ int main(int argc, char* argv[]) {
   if (clock_nanny) {
     config.ConfigureClockNanny(*clock_nanny);
   }
+  config.ConfigureClipboardNanny(*clipboard_nanny);
 
   main_widget.show();
   return QApplication::exec();

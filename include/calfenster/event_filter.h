@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qdatetime.h>
 #include <qobject.h>
 
 class QWidget;
@@ -17,6 +18,10 @@ class EventFilter : public QObject {
 
  protected:
   bool eventFilter(QObject* obj, QEvent* event) override;
+
+ public:
+ signals:
+  void CopyDate(const QDate& date);
 };
 
 }  // namespace calfenster
