@@ -26,6 +26,7 @@
 #include <set>
 #include <vector>
 
+#include "calfenster/clipboard_nanny.h"
 #include "calfenster/clock_nanny.h"
 #include "calfenster/config.h"
 
@@ -270,6 +271,12 @@ Configuration::Configuration() {
         settings.value("format", "yyyy-MM-dd hh:mm").toString());
   }
   settings.endArray();
+
+  // Clipboard
+  settings.beginGroup("Clipboard");
+  clipboard_options.format =
+      settings.value("format", clipboard_options.format).toString();
+  settings.endGroup();
 }
 
 Configuration::~Configuration() {
@@ -344,6 +351,11 @@ Configuration::~Configuration() {
     }
     settings.endArray();
   }
+
+  // Clipboard
+  settings.beginGroup("Clipboard");
+  settings.setValue("format", clipboard_options.format);
+  settings.endGroup();
 }
 
 void Configuration::ConfigureWindow(QWidget& widget) const {
@@ -443,6 +455,10 @@ void Configuration::ConfigureClockNanny(ClockNanny& nanny) const {
     clock.clock_label->setFont(font);
     clock.time_label->setFont(font);
   }
+}
+
+void Configuration::ConfigureClipboardNanny(ClipboardNanny& nanny) const {
+  nanny.SetFormat(clipboard_options.format);
 }
 
 }  // namespace calfenster

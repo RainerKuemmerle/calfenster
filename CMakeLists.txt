@@ -27,6 +27,7 @@ add_executable(calfenster
 src/configuration.cpp
 src/event_filter.cpp
 src/app_server.cpp
+src/clipboard_nanny.cpp
 src/clock_nanny.cpp
 src/main.cpp)
 

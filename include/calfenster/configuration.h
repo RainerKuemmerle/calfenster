@@ -13,6 +13,7 @@ class QCalendarWidget;
 namespace calfenster {
 
 class ClockNanny;
+class ClipboardNanny;
 
 /**
  * @brief The configuration class of our nice little tool.
@@ -61,6 +62,10 @@ struct Configuration {
     std::array<int, 4> margins = {0, 0, 0, 0};
   };
 
+  struct ClipboardConfig {
+    QString format = "dd.MM.yyyy";
+  };
+
   Configuration();
   ~Configuration();
 
@@ -74,6 +79,9 @@ struct Configuration {
   FontConfig clock_font;
   WeekdayConfig weekday_font;
 
+  // clipboard interaction
+  ClipboardConfig clipboard_options;
+
   QString locale = "";  ///< Common Locale Data Repository v45
 
   // Calender display options
@@ -86,6 +94,7 @@ struct Configuration {
   void ConfigureWindow(QWidget& widget) const;
   void ConfigureCalendar(QCalendarWidget& widget) const;
   void ConfigureClockNanny(ClockNanny& nanny) const;
+  void ConfigureClipboardNanny(ClipboardNanny& nanny) const;
 
   bool save_on_exit = false;
 };
