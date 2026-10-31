@@ -155,30 +155,51 @@ QCalendarWidget::HorizontalHeaderFormat ToHorizontalHeaderFormat(
 }
 
 #ifdef HAVE_LAYER_SHELL
-template <typename T>
-T StringToEnum(QMetaEnum meta_enum, const QString& value) {
-  bool ok = true;
-  T result = T(meta_enum.keyToValue(qPrintable(value), &ok));
-  if (!ok) {
-    qWarning() << "Unknown enum value " << value;
-    return T{};
+LayerShellQt::Window::Anchors ParseAnchors(const QString& value) {
+  LayerShellQt::Window::Anchors result{};
+  const auto values = value.split(QLatin1Char('|'), Qt::SkipEmptyParts);
+  for (const auto& token : values) {
+    const auto trimmed = token.trimmed();
+    if (trimmed.compare("AnchorTop", Qt::CaseInsensitive) == 0 ||
+        trimmed.compare("Top", Qt::CaseInsensitive) == 0) {
+      result |= LayerShellQt::Window::AnchorTop;
+    } else if (trimmed.compare("AnchorBottom", Qt::CaseInsensitive) == 0 ||
+               trimmed.compare("Bottom", Qt::CaseInsensitive) == 0) {
+      result |= LayerShellQt::Window::AnchorBottom;
+    } else if (trimmed.compare("AnchorLeft", Qt::CaseInsensitive) == 0 ||
+               trimmed.compare("Left", Qt::CaseInsensitive) == 0) {
+      result |= LayerShellQt::Window::AnchorLeft;
+    } else if (trimmed.compare("AnchorRight", Qt::CaseInsensitive) == 0 ||
+               trimmed.compare("Right", Qt::CaseInsensitive) == 0) {
+      result |= LayerShellQt::Window::AnchorRight;
+    } else if (!trimmed.isEmpty()) {
+      qWarning() << "Unknown layer shell anchor value" << value;
+    }
   }
   return result;
 }
 
-template <typename T>
-T FlaggedStringToEnum(QMetaEnum meta_enum, const QString& str) {
-  T ret = {};
-  const auto splitted = str.split(QLatin1Char('|'), Qt::SkipEmptyParts);
-  for (const auto& value : splitted) {
-    ret |= StringToEnum<T>(meta_enum, value);
+LayerShellQt::Window::Layer ParseLayer(const QString& value) {
+  const auto trimmed = value.trimmed();
+  if (trimmed.compare("LayerBackground", Qt::CaseInsensitive) == 0 ||
+      trimmed.compare("Background", Qt::CaseInsensitive) == 0) {
+    return LayerShellQt::Window::LayerBackground;
   }
-  return ret;
+  if (trimmed.compare("LayerBottom", Qt::CaseInsensitive) == 0 ||
+      trimmed.compare("Bottom", Qt::CaseInsensitive) == 0) {
+    return LayerShellQt::Window::LayerBottom;
+  }
+  if (trimmed.compare("LayerTop", Qt::CaseInsensitive) == 0 ||
+      trimmed.compare("Top", Qt::CaseInsensitive) == 0) {
+    return LayerShellQt::Window::LayerTop;
+  }
+  if (trimmed.compare("LayerOverlay", Qt::CaseInsensitive) == 0 ||
+      trimmed.compare("Overlay", Qt::CaseInsensitive) == 0) {
+    return LayerShellQt::Window::LayerOverlay;
+  }
+  qWarning() << "Unknown layer shell layer value" << value;
+  return LayerShellQt::Window::LayerTop;
 }
-
-const auto kAnchorMetaEnum =
-    QMetaEnum::fromType<LayerShellQt::Window::Anchor>();
-const auto kLayerMetaEnum = QMetaEnum::fromType<LayerShellQt::Window::Layer>();
 #endif
 
 }  // namespace
@@ -392,10 +413,9 @@ void Configuration::ConfigureWindow(QWidget& widget) const {
     widget.createWinId();
     QWindow* window = widget.windowHandle();
     LayerShellQt::Window* layer_shell = LayerShellQt::Window::get(window);
-    const auto layer = StringToEnum<LayerShellQt::Window::Layer>(
-        kLayerMetaEnum, wayland_options.layer);
-    const auto anchors = FlaggedStringToEnum<LayerShellQt::Window::Anchors>(
-        kAnchorMetaEnum, wayland_options.anchors);
+    const LayerShellQt::Window::Layer layer = ParseLayer(wayland_options.layer);
+    const LayerShellQt::Window::Anchors anchors =
+        ParseAnchors(wayland_options.anchors);
     layer_shell->setAnchors(anchors);
     layer_shell->setLayer(layer);
     layer_shell->setMargins(
